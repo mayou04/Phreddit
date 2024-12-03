@@ -12,6 +12,7 @@ your application running.
 In the sections below, list and describe each contribution briefly.
 
 ## Team Member 1 Contribution
+Dylan Nicastro: Full backend + documentation
 
 ## Team Member 2 Contribution
-
+Martin You: Full frontend

@@ -1,13 +1,726 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Add CSS stylesheet */
+@import url('https://fonts.googleapis.com/css2?family=Reddit+Sans:wght@800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+    --bg-color: #FFFFFF;
+    --divider-color: #CCCCCC;
+    --button-text-color: #FFFFFF;
+    --search-text-color: #000000;
+    --title-text-color: #181C1F;
+    --body-text-color: #333D42;
+    --logo-color: #FF4500;
+    --placeholder-color: #5C6C74;
+    --searchbar-color: #E5EBEE;
+    --searchbar-hover: #DBE4E9;
+    --button-color: #56656c;
+    --button-hover: #D93900;
+    --button-click: #AE2C00;
+    --hr-color: #E6E6E6;
+    --flair-color: #BEBEBE;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+    margin: 0;
+    background-color: var(--bg-color);
+    font-family: "Reddit Sans", sans-serif;
+    transition: background-color 0.1s ease;
+}
+
+#container {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    margin: 0px;
+    grid-template-areas:
+        "banner     banner"
+        "sidebar    content";
+    grid-template-rows: 57px auto;
+    grid-template-columns: 272px auto;
+}
+
+#banner {
+    grid-area: banner;
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    border-bottom: solid 1px var(--divider-color);
+    justify-content: space-between;
+    background-color: var(--bg-color);
+}
+
+#banner .logo {
+    flex: 1;
+    order: 1;
+}
+
+#banner #logo-link {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    height: 40px;
+    width: 149px;
+    margin-right: 24px;
+    text-decoration-line: none;
+}
+
+#banner .logo-img {
+    padding-right: 8px;
+    height: 32px;
+    pointer-events: none;
+}
+
+#banner .logo-text {
+    color: var(--logo-color);
+    font-family: "Reddit Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-size: 27px;
+    margin: 0px;
+    pointer-events: none;
+}
+
+#banner .searchbar {
+    flex: 2;
+    order: 2;
+    height: 40px;
+    margin-right: 24px;
+    display: flex;
+    justify-content: center;
+}
+
+#banner input.bar {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    padding: 0px 16px 0px 42px;
+    border: none;
+    background: var(--searchbar-color);
+    caret-color: var(--search-text-color);
+    color: var(--search-text-color);
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 16px;
+    background-image: url('data:image/svg+xml,<svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path fill="%23000000" d="m16.9994165 16.2923098 3.8541369 3.8541368c.1952621.1952622.1952621.5118446 0 .7071068-.1952622.1952621-.5118446.1952621-.7071068 0l-3.8541368-3.8541369c-1.4103486 1.2450743-3.2630999 2.0005835-5.2923098 2.0005835-4.418278 0-8-3.581722-8-8s3.581722-8 8-8 8 3.581722 8 8c0 2.0292099-.7555092 3.8819612-2.0005835 5.2923098zm-5.9994165 1.7076902c3.8659932 0 7-3.1340068 7-7 0-3.86599325-3.1340068-7-7-7-3.86599325 0-7 3.13400675-7 7 0 3.8659932 3.13400675 7 7 7z"/></svg>');
+    background-size: 20px;
+    background-position: 14px center;
+    background-repeat: no-repeat;
+}
+
+#banner input.bar:hover {
+    background-color: var(--searchbar-hover);
+}
+
+#banner input.bar:focus {
+    outline: none;
+}
+
+#banner input.bar::placeholder {
+    color: var(--placeholder-color);
+}
+
+#banner input.bar::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    height: 24px;
+    width: 24px;
+    margin-left: .4em;
+    background-image: url('data:image/svg+xml,<svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path fill="%23000000" d="m13.41425 12.00025 5.293-5.293c.391-.391.391-1.023 0-1.414s-1.023-.391-1.414 0l-5.293 5.293-5.293-5.293c-.391-.391-1.023-.391-1.414 0s-.391 1.023 0 1.414l5.293 5.293-5.293 5.293c-.391.391-.391 1.023 0 1.414.195.195.451.293.707.293s.512-.098.707-.293l5.293-5.293 5.293 5.293c.195.195.451.293.707.293s.512-.098.707-.293c.391-.391.391-1.023 0-1.414z" fill-rule="evenodd"/></svg>');
+    background-repeat: no-repeat;
+    background-size: 20px;
+    border-radius: 50%;
+    background-position: center;
+    cursor: pointer;
+}
+
+#banner input.bar::-webkit-search-cancel-button:hover {
+    background-color: var(--searchbar-color);
+}
+
+#banner .create-post {
+    flex: 1;
+    order: 3;
+
+}
+
+#banner #create-post-button {
+    float: right;
+    border: none;
+    width: auto;
+    height: 40px;
+    padding: 0px 16px;
+    border-radius: 20px;
+    background-color: var(--button-color);
+    font-family: "Noto Sans", sans-serif;
+    color: #FFFFFF;
+    font-weight: 550;
+    transition: background-color 0.2s ease;
+}
+
+#banner #create-post-button:hover {
+    cursor: pointer;
+    background-color: var(--button-hover);
+}
+
+#banner #create-post-button:active {
+    background-color: var(--button-click);
+}
+
+
+#banner #create-post-button.selected {
+    background-color: var(--button-hover);
+}
+
+#left-sidebar {
+    grid-area: sidebar;
+    border-right: solid 1px var(--divider-color);
+    background-color: var(--bg-color);
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+#left-sidebar input[type="button"] {
+    text-align: left;
+    height: 60px;
+    width: 100%;
+    background-color: var(--searchbar-color);
+    border: none;
+    border-radius: 10px;
+    font-family: "Noto Sans", sans-serif;
+    font-size: 16px;
+    color: #000000;
+    background-repeat: no-repeat;
+    background-size: 24px;
+    background-position-x: 10%;
+    background-position-y: 50%;
+    padding-left: 22%;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#left-sidebar input[type="button"]:hover,
+#post-page .create-comment-button:hover {
+    background-color: var(--button-hover);
+    color: var(--button-text-color);
+}
+
+#left-sidebar input[type="button"]:active,
+#post-page .create-comment-button:active {
+    background-color: var(--button-click);
+    color: var(--button-text-color);
+}
+
+#left-sidebar input[type="button"].selected {
+    background-color: var(--button-hover);
+    color: var(--button-text-color);
+}
+
+#left-sidebar .home-button {
+    background-image: url('data:image/svg+xml,<svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="m20 10.7359622v7.7640378c0 1.3807119-1.1192881 2.5-2.5 2.5h-3c-.2761424 0-.5-.2238576-.5-.5v-6c0-.2761424-.2238576-.5-.5-.5h-3c-.2761424 0-.5.2238576-.5.5v6c0 .2761424-.22385763.5-.5.5h-3c-1.38071187 0-2.5-1.1192881-2.5-2.5v-7.7640378l-.18214637.1500029c-.21316265.1755457-.52827304.1450512-.70381875-.0681115-.17554571-.2131626-.14505115-.528273.06811149-.7038187l8.50000003-7.00000002c.1846279-.15204651.4510793-.15204651.6357072 0l8.5 7.00000002c.2131627.1755457.2436572.4906561.0681115.7038187-.1755457.2131627-.4906561.2436572-.7038187.0681115zm-.9933004-.81801207-7.0066996-5.7702232-7.0066996 5.7702232c.00440713.02669598.0066996.05410521.0066996.08204987v8.5c0 .8284271.67157288 1.5 1.5 1.5h2.5v-5.5c0-.8284271.67157288-1.5 1.5-1.5h3c.8284271 0 1.5.6715729 1.5 1.5v5.5h2.5c.8284271 0 1.5-.6715729 1.5-1.5v-8.5c0-.02794466.0022925-.05535389.0066996-.08204987z"/></svg>');
+}
+
+#left-sidebar .home-button:hover,
+#left-sidebar .home-button:active,
+#left-sidebar .home-button.selected {
+    background-image: url('data:image/svg+xml,<svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path fill="%23FFFFFF" d="m20 10.7359622v7.7640378c0 1.3807119-1.1192881 2.5-2.5 2.5h-3c-.2761424 0-.5-.2238576-.5-.5v-6c0-.2761424-.2238576-.5-.5-.5h-3c-.2761424 0-.5.2238576-.5.5v6c0 .2761424-.22385763.5-.5.5h-3c-1.38071187 0-2.5-1.1192881-2.5-2.5v-7.7640378l-.18214637.1500029c-.21316265.1755457-.52827304.1450512-.70381875-.0681115-.17554571-.2131626-.14505115-.528273.06811149-.7038187l8.50000003-7.00000002c.1846279-.15204651.4510793-.15204651.6357072 0l8.5 7.00000002c.2131627.1755457.2436572.4906561.0681115.7038187-.1755457.2131627-.4906561.2436572-.7038187.0681115zm-.9933004-.81801207-7.0066996-5.7702232-7.0066996 5.7702232c.00440713.02669598.0066996.05410521.0066996.08204987v8.5c0 .8284271.67157288 1.5 1.5 1.5h2.5v-5.5c0-.8284271.67157288-1.5 1.5-1.5h3c.8284271 0 1.5.6715729 1.5 1.5v5.5h2.5c.8284271 0 1.5-.6715729 1.5-1.5v-8.5c0-.02794466.0022925-.05535389.0066996-.08204987z"/></svg>');
+}
+
+#left-sidebar .create-community-button {
+    background-image: url('data:image/svg+xml,<svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="m13 12h3.5c.2761424 0 .5.2238576.5.5s-.2238576.5-.5.5h-3.5v3.5c0 .2761424-.2238576.5-.5.5s-.5-.2238576-.5-.5v-3.5h-3.5c-.27614237 0-.5-.2238576-.5-.5s.22385763-.5.5-.5h3.5v-3.5c0-.27614237.2238576-.5.5-.5s.5.22385763.5.5zm-.5 11c-5.79898987 0-10.5-4.7010101-10.5-10.5 0-5.79898987 4.70101013-10.5 10.5-10.5 5.7989899 0 10.5 4.70101013 10.5 10.5 0 5.7989899-4.7010101 10.5-10.5 10.5zm0-1c5.2467051 0 9.5-4.2532949 9.5-9.5 0-5.24670512-4.2532949-9.5-9.5-9.5-5.24670512 0-9.5 4.25329488-9.5 9.5 0 5.2467051 4.25329488 9.5 9.5 9.5z"/></svg>');
+    margin-bottom: 4px;
+    min-height: 60px;
+}
+
+#left-sidebar .create-community-button:hover,
+#left-sidebar .create-community-button:active,
+#left-sidebar .create-community-button.selected {
+    background-image: url('data:image/svg+xml,<svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path fill="%23FFFFFF" d="m13 12h3.5c.2761424 0 .5.2238576.5.5s-.2238576.5-.5.5h-3.5v3.5c0 .2761424-.2238576.5-.5.5s-.5-.2238576-.5-.5v-3.5h-3.5c-.27614237 0-.5-.2238576-.5-.5s.22385763-.5.5-.5h3.5v-3.5c0-.27614237.2238576-.5.5-.5s.5.22385763.5.5zm-.5 11c-5.79898987 0-10.5-4.7010101-10.5-10.5 0-5.79898987 4.70101013-10.5 10.5-10.5 5.7989899 0 10.5 4.70101013 10.5 10.5 0 5.7989899-4.7010101 10.5-10.5 10.5zm0-1c5.2467051 0 9.5-4.2532949 9.5-9.5 0-5.24670512-4.2532949-9.5-9.5-9.5-5.24670512 0-9.5 4.25329488-9.5 9.5 0 5.2467051 4.25329488 9.5 9.5 9.5z"/></svg>');
+    margin-bottom: 4px;
+}
+
+#left-sidebar hr {
+    border: solid 1px var(--hr-color);
+    width: 100%;
+    margin: 12px -1px;
+}
+
+#left-sidebar h2 {
+    font-family: "Noto Sans", sans-serif;
+    text-transform: uppercase;
+    margin: 0px 0px 12px;
+    font-size: 14px;
+    align-self: left;
+    font-weight: 400;
+    color: #576F76;
+    letter-spacing: 2px;
+}
+
+#left-sidebar .community-link {
+    background-image: url('data:image/svg+xml,<svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="m12.1203717 8.82539569c-.1797111-.20966292-.1554303-.52531292.0542326-.70502399.2096629-.17971108.5253129-.15543031.705024.05423261l3 3.49999999c.1604956.1872449.1604956.4635465 0 .6507914l-3 3.5c-.1797111.2096629-.4953611.2339437-.705024.0542326s-.2339437-.4953611-.0542326-.705024l2.7210894-3.1746043zm-4 0c-.17971108-.20966292-.15543031-.52531292.05423261-.70502399.20966292-.17971108.52531292-.15543031.70502399.05423261l3 3.49999999c.1604956.1872449.1604956.4635465 0 .6507914l-3 3.5c-.17971107.2096629-.49536107.2339437-.70502399.0542326s-.23394369-.4953611-.05423261-.705024l2.7210894-3.1746043z"/></svg>');
+    background-repeat: no-repeat;
+    background-size: 40px;
+    background-position: -4px center;
+    background-color: transparent;
+    border-radius: 10px;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+#left-sidebar .community-link:hover {
+    background-color: var(--searchbar-color);
+}
+
+#left-sidebar .community-link:active {
+    background-color: var(--searchbar-hover);
+}
+
+#left-sidebar .community-link.selected {
+    background-color: var(--searchbar-hover);
+}
+
+#left-sidebar h3,
+#left-sidebar h4 {
+    font-family: "IBM Plex Sans", sans-serif;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 36px;
+    user-select: none;
+    pointer-events: none;
+}
+
+#left-sidebar h3 {
+    font-size: 18px;
+    margin-bottom: 2px;
+}
+
+#left-sidebar h4 {
+    margin-top: 2px;
+    font-size: 14px;
+}
+
+#left-sidebar #community-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#left-sidebar .communities-section {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+#content {
+    grid-area: content;
+    overflow: auto;
+}
+
+.view-posts {
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+#content hr {
+    border: solid 1px var(--search-text-color);
+    width: 100%;
+}
+
+#content hr.post-separator {
+    border: dotted 1px var(--search-text-color);
+    width: 100%;
+}
+
+.view-posts #home-title,
+.view-posts #community-title {
+    font-size: 56px;
+    font-weight: 550;
+    padding: 10px;
+    margin-right: 20px;
+    max-width: 50%;
+    overflow: hidden;
+    text-wrap: wrap;
+    text-overflow: ellipsis;
+}
+
+.view-posts #home-header,
+.view-posts #community-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Post being able to be selected/receive events. */
+.post h3,
+.post h4,
+.post h5 {
+    user-select: none;
+    pointer-events: none;
+    text-wrap: wrap;
+    word-wrap: break-word;
+}
+
+.post-order-buttons {
+    margin-right: 50px;
+}
+
+.post-order-button {
+    margin-top: 3px;
+    margin-right: 5px;
+    padding: 0px 7px;
+    border: none;
+    width: 100px;
+    height: 40px;
+    border-radius: 20px;
+    background-color: var(--button-color);
+    font-family: "Noto Sans", sans-serif;
+    color: #FFFFFF;
+    font-weight: 550;
+    cursor: pointer;
+}
+
+.post-order-button:hover {
+    background-color: var(--button-hover);
+}
+
+.post-order-button:active {
+    background-color: var(--button-click);
+}
+
+.post-order-button.selected,
+#left-sidebar input[type="button"].selected {
+    background-color: var(--logo-color);
+}
+
+#left-sidebar input[type="button"].selected {
+    color: var(--button-text-color);
+}
+
+.view-posts .post-counter {
+    color: var(--body-text-color);
+    font-size: 24px;
+    margin: 10px 20px;
+}
+
+.view-posts .community-description {
+    color: var(--body-text-color);
+    font-size: 22px;
+    font-family: "Noto Sans", sans-serif;
+    font-weight: 400;
+    margin: 0px 20px 10px;
+}
+
+.view-posts .post {
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.1s ease;
+    border-radius: 15px;
+}
+
+.view-posts .post:hover {
+    background-color: #F5F5F5;
+}
+
+.view-posts .post:active {
+    background-color: #DFDFDF;
+}
+
+#content h3 {
+    font-family: "Noto Sans", sans-serif;
+    color: var(--title-text-color);
+    font-weight: 700;
+    font-size: 18px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+#content h4,
+#content h5 {
+    font-family: "Noto Sans", sans-serif;
+    color: var(--body-text-color);
+    font-weight: 400;
+    font-size: 14px;
+    text-wrap: wrap;
+    word-wrap: break-word;
+}
+
+#content h5 {
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+#content .post-info,
+.view-posts .post-content-preview {
+    margin-top: 12px;
+}
+
+#content #post-flair,
+#content .post-flair {
+    display: inline-block;
+    margin-top: 0px;
+    background-color: var(--flair-color);
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+#content #post-views,
+#content #post-comments-count,
+#content .post-views,
+#content .post-comments-count {
+    padding: 5px 10px 5px 30px;
+    border-radius: 10px;
+    background-color: #E8E9EB;
+}
+
+#content #post-views,
+#content .post-views {
+    background-image: url('data:image/svg+xml,<svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path fill="%23333D42" d="m2.03381935 11.8192361c2.13426984-5.50416962 8.32644845-8.23601313 13.83061805-6.10174329 2.8009914 1.08609871 5.0156445 3.30075186 6.1017433 6.10174329.0450924.1162911.0450924.2452367 0 .3615278-2.1342699 5.5041696-8.3264485 8.2360131-13.8306181 6.1017433-2.8009914-1.0860987-5.01564455-3.3007519-6.10174325-6.1017433-.04509247-.1162911-.04509247-.2452367 0-.3615278zm6.46327111 5.5309098c4.92859784 1.9110889 10.46577134-.482124 12.46456264-5.3500984-1.0083666-2.45339267-2.9803352-4.3891779-5.4587436-5.35019338-4.9285978-1.91108894-10.4657713.48212397-12.46456258 5.35009838 1.00836657 2.4533927 2.9803352 4.3891779 5.45874354 5.3501934zm3.50290954-1.3501459c-2.209139 0-4-1.790861-4-4s1.790861-4 4-4 4 1.790861 4 4-1.790861 4-4 4zm0-1c1.6568542 0 3-1.3431458 3-3s-1.3431458-3-3-3-3 1.3431458-3 3 1.3431458 3 3 3z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: 5px 2px;
+    margin-right: 3.5px;
+}
+
+#content #post-comments-count,
+#content .post-comments-count {
+    background-image: url('data:image/svg+xml,<svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path fill="%23333D42" d="m8.2881437 19.1950792c.10054811-.016758.20381626-.0023837.29596556.0411969 1.05849635.5005986 2.21803194.7637239 3.41589074.7637239 4.418278 0 8-3.581722 8-8s-3.581722-8-8-8-8 3.581722-8 8c0 1.7069096.53528582 3.3318588 1.51454846 4.6849571.10556077.1458589.12454826.3372089.04971064.5009685l-1.21844908 2.6662092zm-4.70594421 1.7981178c-.39521166.0658686-.70349741-.3366089-.53696184-.7010219l1.49069017-3.2619269c-.99449445-1.4726435-1.53592782-3.2112552-1.53592782-5.0302482 0-4.97056275 4.02943725-9 9-9 4.9705627 0 9 4.02943725 9 9 0 4.9705627-4.0294373 9-9 9-1.292471 0-2.5471359-.272945-3.69946566-.7931922z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: 6px 2px;
+    background-size: 22px;
+}
+
+.view-posts .community-date {
+    margin-top: 0px;
+    margin-left: 20px;
+}
+
+#post-page {
+    margin: 10px;
+    display: block;
+}
+
+#post-page .less-margin {
+    margin-top: 10px;
+}
+
+#post-page #posterName {
+    font-weight: bold;
+}
+
+#post-page h3 {
+    font-size: 24px;
+}
+
+#post-page h4 {
+    font-size: 14px;
+    margin: 10px 0px 30px;
+}
+
+#post-page h5 {
+    font-size: 12px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+#post-page #post-views {
+    margin-right: 4px;
+}
+
+
+#post-page .create-comment-button {
+    text-align: left;
+    margin-top: 10px;
+    height: 60px;
+    width: 200px;
+    background-color: var(--searchbar-color);
+    border: none;
+    border-radius: 10px;
+    font-family: "Noto Sans", sans-serif;
+    font-size: 16px;
+    color: #000000;
+    background-repeat: no-repeat;
+    background-size: 24px;
+    background-position-x: 15px;
+    background-position-y: 50%;
+    padding-left: 50px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    background-image: url('data:image/svg+xml,<svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path fill="%23000000" d="m5.7898124 15.0400458c.13241276-.0378323.27456678-.0193769.39292951.0510126.99547255.5920005 2.13255715.9089416 3.31725809.9089416 3.5898509 0 6.5-2.9101491 6.5-6.5 0-3.58985087-2.9101491-6.5-6.5-6.5-3.58985087 0-6.5 2.91014913-6.5 6.5 0 1.1847009.31694108 2.3217855.90894164 3.3172581.07038949.1183627.08884483.2605167.05101261.3929295l-.73194326 2.5618014zm10.888888-7.71857983c3.1301578.94810663 5.3212996 3.84682143 5.3212996 7.17853403 0 1.291292-.3272163 2.5357461-.9403562 3.6387259l.9211182 3.2239135c.1077645.377176-.2409466.7258871-.6181226.6181226l-3.2239135-.9211182c-1.1029798.6131399-2.3474339.9403562-3.6387259.9403562-3.3285064 0-6.22883281-2.1873547-7.17854188-5.3213898-.50707063-.1536643-.99614767-.3610114-1.46018399-.6189664l-3.22391357.9211182c-.37717594.1077645-.72588709-.2409466-.61812253-.6181226l.92111816-3.2239135c-.61313986-1.1029798-.94035619-2.3474339-.94035619-3.6387259 0-4.14213562 3.35786438-7.5 7.5-7.5 3.3844665 0 6.2453349 2.24179021 7.1787004 5.32146597zm.250999 1.1473973c.0463503.33708482.0703006.68131383.0703006 1.03113673 0 4.1421356-3.3578644 7.5-7.5 7.5-.34771062 0-.6920251-.0237259-1.03109572-.0703714.9752836 2.4229534 3.34211712 4.0703714 6.03109572 4.0703714 1.1847009 0 2.3217855-.3169411 3.3172581-.9089416.1183627-.0703895.2605167-.0888449.3929295-.0510126l2.5618014.7319432-.7319432-2.5618014c-.0378323-.1324128-.0193769-.2745668.0510126-.3929295.5920005-.9954726.9089416-2.1325572.9089416-3.3172581 0-2.6913466-1.6500462-5.05700561-4.0703006-6.03113673z"/></svg>');
+}
+
+#post-page .create-comment-button:hover,
+#post-page .create-comment-button:active {
+    background-image: url('data:image/svg+xml,<svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path fill="%23FFFFFF" d="m5.7898124 15.0400458c.13241276-.0378323.27456678-.0193769.39292951.0510126.99547255.5920005 2.13255715.9089416 3.31725809.9089416 3.5898509 0 6.5-2.9101491 6.5-6.5 0-3.58985087-2.9101491-6.5-6.5-6.5-3.58985087 0-6.5 2.91014913-6.5 6.5 0 1.1847009.31694108 2.3217855.90894164 3.3172581.07038949.1183627.08884483.2605167.05101261.3929295l-.73194326 2.5618014zm10.888888-7.71857983c3.1301578.94810663 5.3212996 3.84682143 5.3212996 7.17853403 0 1.291292-.3272163 2.5357461-.9403562 3.6387259l.9211182 3.2239135c.1077645.377176-.2409466.7258871-.6181226.6181226l-3.2239135-.9211182c-1.1029798.6131399-2.3474339.9403562-3.6387259.9403562-3.3285064 0-6.22883281-2.1873547-7.17854188-5.3213898-.50707063-.1536643-.99614767-.3610114-1.46018399-.6189664l-3.22391357.9211182c-.37717594.1077645-.72588709-.2409466-.61812253-.6181226l.92111816-3.2239135c-.61313986-1.1029798-.94035619-2.3474339-.94035619-3.6387259 0-4.14213562 3.35786438-7.5 7.5-7.5 3.3844665 0 6.2453349 2.24179021 7.1787004 5.32146597zm.250999 1.1473973c.0463503.33708482.0703006.68131383.0703006 1.03113673 0 4.1421356-3.3578644 7.5-7.5 7.5-.34771062 0-.6920251-.0237259-1.03109572-.0703714.9752836 2.4229534 3.34211712 4.0703714 6.03109572 4.0703714 1.1847009 0 2.3217855-.3169411 3.3172581-.9089416.1183627-.0703895.2605167-.0888449.3929295-.0510126l2.5618014.7319432-.7319432-2.5618014c-.0378323-.1324128-.0193769-.2745668.0510126-.3929295.5920005-.9954726.9089416-2.1325572.9089416-3.3172581 0-2.6913466-1.6500462-5.05700561-4.0703006-6.03113673z"/></svg>');
+}
+
+#post-page #comment-section {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#post-page .comment {
+    background-color: var(--searchbar-color);
+    border-radius: 20px;
+    padding: 3px 15px 5px;
+    margin-top: 8px;
+    width: 75%;
+}
+
+#post-page .comment h5 {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#post-page .comment h4 {
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+#post-page .reply {
+    margin-top: 5px;
+}
+
+#post-page .reply-button {
+    padding: 2px 8px;
+    margin-bottom: 3px;
+    border-radius: 20px;
+    border: none;
+    background-color: var(--button-color);
+    font-family: "Noto Sans", sans-serif;
+    color: #FFFFFF;
+    font-weight: 550;
+    transition: background-color 0.2s ease;
+}
+
+#post-page .reply-button:hover {
+    cursor: pointer;
+    background-color: var(--button-hover);
+}
+
+#post-page .reply-button:active {
+    background-color: var(--button-click);
+}
+
+#post-page hr.post-separator {
+    margin-left: -1px;
+}
+
+#make-item {
+    margin: 10px;
+    display: block;
+    align-items: center;
+}
+
+#make-item .error-message {
+    opacity: 0;
+    z-index: 1;
+    min-width: 200px;
+    max-width: 600px;
+    overflow: auto;
+    text-wrap: wrap;
+    word-wrap: break-word;
+    background-color: var(--divider-color);
+    top: 65px;
+    position: fixed;
+    justify-self: center;
+    color: var(--body-text-color);
+    text-align: center;
+    font-family: "IBM Plex Sans", sans-serif;
+    border-radius: 10px;
+    padding: 16px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    white-space: pre-line;
+    transition: opacity 0.15s ease-out;
+    border: 1px solid var(--placeholder-color);
+    box-shadow: 0px 0px 8px 5px var(--hr-color);
+}
+
+#make-item .error-message.displayed {
+    opacity: 1;
+}
+
+#make-item select.dropdown:required:invalid {
+    color: gray;
+}
+
+#make-item option[value=""][disabled] {
+    display: none;
+}
+
+#make-item option {
+    color: black;
+}
+
+#make-item #flair-creation-field {
+    margin-left: 3px;
+}
+
+#make-comment,
+#make-post,
+#make-community {
+    width: 100%;
+}
+
+#make-item input[type="text"],
+#make-item textarea {
+    font-family: "Noto Sans", sans-serif;
+    font-size: 14px;
+}
+
+#make-item h5 {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 20px;
+}
+
+#make-item .small {
+    font-size: 12px;
+}
+
+#make-item #community-name-field,
+#make-item #post-title-field {
+    width: 700px;
+}
+
+#make-item textarea#community-desc-field,
+#make-item textarea#post-content-field,
+#make-item textarea#comment-content-field {
+    resize: none;
+    min-height: 140px;
+    width: 500px;
+}
+
+#make-item #community-creator-field,
+#make-item #post-creator-field,
+#make-item #comment-creator-field {
+    width: 200px;
+}
+
+#make-item input[type="button"] {
+    padding: 16px;
+    border-radius: 20px;
+    background-color: var(--button-color);
+    font-family: "Noto Sans", sans-serif;
+    color: #FFFFFF;
+    font-weight: 550;
+    border: none;
+    font-size: 20px;
+    margin-top: 50px;
+    transition: background-color 0.2s ease;
+}
+
+#make-item input[type="button"]:hover {
+    cursor: pointer;
+    background-color: var(--button-hover);
+}
+
+#make-item input[type="button"]:active {
+    background-color: var(--button-click);
+}
+
+#make-item select.dropdown {
+    font-family: "Noto Sans", sans-serif;
+    font-size: 14px;
+    height: 25px;
 }

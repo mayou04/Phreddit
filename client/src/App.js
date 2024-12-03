@@ -4,6 +4,8 @@ import './stylesheets/App.css';
 import Phreddit from './components/phreddit.js'
 
 function App() {
+  document.title = "Phreddit";
+  
   return (
     <section className="phreddit">
       <Phreddit />
