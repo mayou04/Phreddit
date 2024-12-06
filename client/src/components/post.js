@@ -101,7 +101,7 @@ export default function Post(props) {
       let leftMargin = depth*50 + "px";
   
       return (
-        <div id={commentObject._id} className={"comment" + (depth > 0 ? " reply" : "")} style={{marginLeft: `${leftMargin}`}}>
+        <div key={commentObject._id} id={commentObject._id} className={"comment" + (depth > 0 ? " reply" : "")} style={{marginLeft: `${leftMargin}`}}>
           <h5>
             {commentObject.commentedBy} • {utils.getTimestamp(commentObject.commentedDate)}
           </h5>

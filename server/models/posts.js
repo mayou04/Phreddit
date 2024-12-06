@@ -7,7 +7,8 @@ const Post = new mongoose.Schema({
     postedBy: {type: String, required: true},
     postedDate: {type: Date, required: true, default: Date.now},
     commentIDs: [{type: mongoose.Schema.Types.ObjectId, ref: 'Comment'}],
-    views: {type: Number, required: true, default: 0}
+    views: {type: Number, required: true, default: 0},
+    voteCount: {type: Number, default: 1},
 });
 
 Post.virtual('url').get(function () {

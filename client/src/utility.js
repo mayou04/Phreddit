@@ -280,7 +280,7 @@ export async function updatePost(postID, newData) {
       const response = await axios.put(`http://localhost:8000/posts/update/${postID}`, newData);
       return response.data;
   } catch (error) {
-      console.error('Error updating comment:', error);
+      console.error('Error updating post:', error);
       throw error;
   }
 }

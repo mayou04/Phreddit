@@ -4,7 +4,8 @@ const Comment = new mongoose.Schema({
     content: {type: String, required: true, maxLength: 500},
     commentIDs: [{type: mongoose.Schema.Types.ObjectId, ref: 'Comment'}],
     commentedBy: {type: String, required: true},
-    commentedDate: {type: Date, required: true, default: Date.now}
+    commentedDate: {type: Date, required: true, default: Date.now},
+    voteCount: {type: Number, default: 1},
 });
 
 Comment.virtual('url').get(function () {
