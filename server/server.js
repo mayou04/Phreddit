@@ -3,8 +3,10 @@
 // This is where you should start writing server-side code for this application.
 const express = require('express');
 const app = express();
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
 const port = 8000;
-const {queryPosts, queryComments, queryCommunities, queryLinkFlairs} = require('./queries.js');
+const {queryPosts, queryComments, queryCommunities, queryLinkFlairs, queryUsers, passwordMatches} = require('./queries.js');
 const cors = require('cors');
 
 const CommunityModel = require('./models/communities');
@@ -15,6 +17,56 @@ const LinkFlairModel = require('./models/linkflairs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+app.use(cookieParser());
+app.use(session({
+    secret: "mIFIyqgeFaMLAxSICzBAwaFlu2VHwl", // Usually would store this in a non-public file, but it's needed for graders cloning the repo
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: false, // Since we aren't implementing HTTPS for this project
+        maxAge: 1000 /* ms */ * 60 /* sec */ * 60 /* min */ * 24 /* hours */,
+    }
+}));
+
+const isAdminOrCreator = async (req, res, next) => {
+    const { user } = req.session;
+    if (!user) return res.json({error: "Unauthorized"});
+
+    const { itemId } = req.params;
+    var item = await PostModel.findById(itemId);
+    if (!item) item = await CommunityModel.findById(itemId);
+    if (!item) item = await CommentModel.findById(itemId);
+    if (!item) item = await LinkFlairModel.findById(itemId);
+    if (!item) return res.json({error: "Item not found"});
+
+    if (user.isAdmin || item.postedBy.toString() === user.name) {
+        return next(); // User is authorized
+    }
+
+    res.json({error: "No permission to modify this item"});
+};
+
+const isAdminOrSelf = async (req, res, next) => {
+    const { user } = req.session;
+    if (!user) return res.json({error: "Unauthorized"});
+
+    const { itemId } = req.params;
+    const item = await UserModel.findById(itemId);
+    if (!item) return res.json({error: "Item not found"});
+
+    if (user.isAdmin || item.name === user.name) {
+        return next(); // User is authorized
+    }
+
+    res.json({error: "No permission to modify this user"});
+}
+
+const isLoggedIn = async (req, res, next) => {
+    if (req.session.user) next();
+    else res.json({error: "Not logged in"});
+};
+
 
 app.get("/", async (req, res) => {
     res.send({});
@@ -25,13 +77,13 @@ app.get("/posts/", async (req, res) => {
     res.send(posts);
 });
 
-app.post("/posts/make", async (req, res) => {
+app.post("/posts/make", isLoggedIn, async (req, res) => {
     try {
         let newPost = req.body;
         const post = await PostModel.create({
             title: newPost.title,
             content: newPost.content,
-            postedBy: newPost.postedBy,
+            postedBy: req.session.user.name,
             postedDate: newPost.postedDate,
             views: newPost.views,
             linkFlairID: newPost.linkFlairID,
@@ -40,18 +92,30 @@ app.post("/posts/make", async (req, res) => {
         res.send(post._id);
     }
     catch (err) {
-        res.send("Error making post");
+        res.json({error: "Error making post"});
     }
 });
 
-app.put("/posts/update/:postID", async (req, res) => {
+app.put("/posts/update/:postID", isAdminOrCreator, async (req, res) => {
     try {
         const postID = req.params.postID;
         const newData = req.body;
-        await PostModel.findByIdAndUpdate(postID, newData);
+        const updatedPost = await PostModel.findByIdAndUpdate(postID, newData);
+        res.json(updatedPost);
     } 
     catch (err) {
-        res.send("Error updating post");
+        res.json({error: "Error updating post"});
+    }
+});
+
+app.delete("/posts/delete/:postID", isAdminOrCreator, async (req, res) => {
+    try {
+        const postID = req.params.postID;
+        await PostModel.findByIdAndDelete(postID);
+        res.json({message: "Post successfully deleted"});
+    }
+    catch (err) {
+        res.json({error: "Error deleting post"});
     }
 });
 
@@ -60,7 +124,7 @@ app.get("/communities/", async (req, res) => {
     res.send(communities);
 });
 
-app.post("/communities/make", async (req, res) => {
+app.post("/communities/make", isLoggedIn, async (req, res) => {
     try {
         let newCommunity = req.body;
         const community = await CommunityModel.create({
@@ -73,11 +137,11 @@ app.post("/communities/make", async (req, res) => {
         res.send(community._id);
     }
     catch (err) {
-        res.send("Error making community");
+        res.json({error: "Error making community"});
     }
 });
 
-app.put("/communities/update/:communityID", async (req, res) => {
+app.put("/communities/update/:communityID", isAdminOrCreator, async (req, res) => {
     try {
         const communityID = req.params.communityID;
         const newData = req.body;
@@ -85,16 +149,55 @@ app.put("/communities/update/:communityID", async (req, res) => {
         res.json(updatedCommunity);
     } 
     catch (err) {
-        res.send("Error updating community");
+        res.json({error: "Error updating community"});
+    }
+});
+
+app.delete("/communities/delete/:communityID", isAdminOrCreator, async (req, res) => {
+    try {
+        const communityID = req.params.communityID;
+        await CommunityModel.findByIdAndDelete(communityID);
+        res.json({message: "Community successfully deleted"});
+    }
+    catch (err) {
+        res.json({error: "Error deleting community"});
+    }
+});
+
+app.post("/communities/join/:communityID", isLoggedIn, async (req, res) => {
+    try {
+        const community = await CommunityModel.findById(req.params.communityID);
+        if (!community) return res.json({error: "Community not found"});
+        if (!community.members.includes(req.session.user.id)) {
+            community.members.push(req.session.user.id);
+            await community.save();
+        }
+        res.json({message: "Joined community"});
+    } catch (err) {
+        res.json({ error: "Error joining community" });
+    }
+});
+
+app.post("/communities/leave/:communityID", isLoggedIn, async (req, res) => {
+    try {
+        const community = await CommunityModel.findById(req.params.communityID);
+        if (!community) return res.json({error: "Community not found"});
+        community.members = community.members.filter(
+            (member) => (member !== req.session.user.id)
+        );
+        await community.save();
+        res.json({message: "Left community"});
+    } catch (err) {
+        res.json({error: "Error leaving community"});
     }
 });
 
 app.get("/comments/", async (req, res) => {
     const comments = await queryComments([], []);
-    res.send(comments);
+    res.json(comments);
 });
 
-app.post("/comments/make", async (req, res) => {
+app.post("/comments/make", isLoggedIn, async (req, res) => {
     console.log("ASA");
     try {
         let newComment = req.body;
@@ -107,18 +210,30 @@ app.post("/comments/make", async (req, res) => {
         res.send(comment._id);
     }
     catch (err) {
-        res.send("Error making comment");
+        res.json({error: "Error making comment"});
     }
 });
 
-app.put("/comments/update/:commentID", async (req, res) => {
+app.put("/comments/update/:commentID", isAdminOrCreator, async (req, res) => {
     try {
         const commentID = req.params.commentID;
         const newData = req.body;
         await CommentModel.findByIdAndUpdate(commentID, newData);
+        res.json({message: "Comment successfully updated"});
     } 
     catch (err) {
-        res.send("Error updating comment");
+        res.json({error: "Error updating comment"});
+    }
+});
+
+app.delete("/comments/delete/:commentID", isAdminOrCreator, async (req, res) => {
+    try {
+        const commentID = req.params.commentID;
+        await CommentModel.findByIdAndDelete(commentID);
+        res.json({message: "Comment successfully deleted"});
+    }
+    catch (err) {
+        res.json({error: "Error deleting comment"});
     }
 });
 
@@ -127,7 +242,7 @@ app.get("/linkflairs/", async (req, res) => {
     res.send(linkFlairs);
 });
 
-app.post("/linkflairs/make", async (req, res) => {
+app.post("/linkflairs/make", isLoggedIn, async (req, res) => {
     try {
         let newLinkFlair = req.body;
         const linkFlair = await LinkFlairModel.create({
@@ -136,19 +251,109 @@ app.post("/linkflairs/make", async (req, res) => {
         res.send(linkFlair._id);
     }
     catch (err) {
-        res.send("Error making link flair");
+        res.json({error: "Error making link flair"});
     }
 });
 
-app.put("/linkflairs/update/:linkFlairID", async (req, res) => {
+
+app.get("/users/", async (req, res) => {
+    const users = await UserModel.find().select("-password");
+    res.send(users);
+});
+
+app.get("/users/byName/:userName", async (req, res) => {
     try {
-        const linkFlairID = req.params._id;
-        const newData = req.body;
-        await LinkFlairModel.findByIdAndUpdate(linkFlairID, newData);
-    } 
-    catch (err) {
-        res.send("Error updating link flair");
+        const user = await UserModel.find({name: req.params.userName}).select("-password");
+        const posts = await PostModel.find({ postedBy: user.name });
+        const comments = await CommentModel.find({ commentedBy: user.name });
+        res.json({user, posts, comments});
+    } catch (err) {
+        res.json({error: "Error fetching user profile"});
     }
 });
+
+app.get("/users/byID/:userID", async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.params.userID).select("-password");
+        const posts = await PostModel.find({ postedBy: user.name });
+        const comments = await CommentModel.find({ commentedBy: user.name });
+        res.json({user, posts, comments});
+    } catch (err) {
+        res.json({error: "Error fetching user profile"});
+    }
+});
+
+app.post("/users/make", async (req, res) => {
+    try {
+        let userDetails = req.body;
+        let newReputation = 100;
+        if (userDetails.isAdmin === true) reputation = 1000;
+        const user = await UserModel.create({
+            name: userDetails.name,
+            password: userDetails.password,
+            email: userDetails.email,
+            reputation: newReputation,
+            isAdmin: userDetails.isAdmin,
+            joinedDate: new Date(),
+        });
+        res.send(user.name);
+    }
+    catch (err) {
+        res.json({error: "Error making user"});
+    }
+});
+
+app.put("/users/update/:userID", isAdminOrSelf, async (req, res) => {
+    try {
+        const userID = req.params.userID;
+        const newData = req.body;
+        await UserModel.findByIdAndUpdate(userID, newData);
+    } 
+    catch (err) {
+        res.json({error: "Error updating user"});
+    }
+});
+
+app.delete("/users/delete/:userID", isAdminOrSelf, async (req, res) => {
+    try {
+        const userID = req.params.userID;
+        await UserModel.findByIdAndDelete(userID);
+        res.json({message: "User successfully deleted"});
+    }
+    catch (err) {
+        res.json({error: "Error deleting user"});
+    }
+});
+
+app.post("/login", async (req, res) => {
+    let userDetails = req.body;
+    isMatch = await passwordMatches(userDetails.email, userDetails.password);
+    if (isMatch === false) return res.json({error: "Invalid password"});
+
+
+    const user = await queryUsers({email: userDetails.email});
+    req.session.user = {
+        id: user._id,
+        name: user.name,
+        isAdmin: user.isAdmin,
+    };
+    res.json({message: 'Login successful'});
+});
+
+app.get("/status", (req, res) => {
+    if (req.session.user) return res.json({
+        isLoggedIn: true,
+        user: req.session.user,
+    });
+    res.json({isLoggedIn: false, user: undefined});
+});
+
+app.post("/logout", (req, res) => {
+    req.session.destroy(() => {
+        res.clearCookie("connect.sid");
+        res.json({message: "Successfully logged out"});
+    });
+});
+
 
 app.listen(port, () => {console.log(`Server listening on port ${port}...`);});

@@ -6,6 +6,7 @@ const CommunityModel = require('./models/communities');
 const PostModel = require('./models/posts');
 const CommentModel = require('./models/comments');
 const LinkFlairModel = require('./models/linkflairs');
+const UserModel = require('./models/users');
 
 async function queryPosts(selector, selectorValue) {
     try {
@@ -91,4 +92,31 @@ async function queryLinkFlairs(selector, selectorValue) {
     }
 }
 
-module.exports = {queryPosts, queryComments, queryCommunities, queryLinkFlairs};
+async function queryUsers(selector, selectorValue) {
+    try {
+        const query = {};
+        if (Array.isArray(selector) && Array.isArray(selectorValue) && selector.length === selectorValue.length) {
+            for (let i = 0; i < selector.length; i++) {
+                query[selector[i]] = selectorValue[i];
+            }
+        }
+        else if (typeof selector === "string") {
+            query[selector] = selectorValue;
+        }
+        else {
+            throw new Error("Invalid input for queryUsers");
+        }
+        const users = await UserModel.find(query);
+        return users || null;
+    } catch (err) {
+        return "Error while fetching users: " + err;
+    }
+}
+
+async function passwordMatches(useremail, password) {
+    const user = await UserModel.findOne({ email: useremail });
+    var isMatch = await user.comparePassword(password);
+    return isMatch;
+}
+
+module.exports = {queryPosts, queryComments, queryCommunities, queryLinkFlairs, queryUsers, passwordMatches};

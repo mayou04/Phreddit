@@ -69,12 +69,12 @@ export default function CreateCommunity() {
     return (
         <div id="make-item">
             <div id="make-community">
-                <h5>Community Name: <span class="small">(required)</span></h5>
+                <h5>Community Name: <span className="small">(required)</span></h5>
                 <input type="text" autoComplete="off" id="community-name-field" onChange={(e) => setCommunityName(e.target.value)}/>
-                <h5>Community Description: <span class="small">(required)</span></h5>
+                <h5>Community Description: <span className="small">(required)</span></h5>
                 <textarea autoComplete="off" id="community-desc-field" onChange={(e) => setCommunityDescription(e.target.value)}></textarea>
-                <h5>Community Creator: <span class="small">(required)</span></h5>
-                <input type="text" autocomplete="off" id="community-creator-field" onChange={(e) => setCommunityCreator(e.target.value)}/>
+                <h5>Community Creator: <span className="small">(required)</span></h5>
+                <input type="text" autoComplete="off" id="community-creator-field" onChange={(e) => setCommunityCreator(e.target.value)}/>
                 <br/>
                 <input type="button" id="community-submit-button" value="Engender Community" onClick={() => {submitCommunity()}}/>
                 {errorMessage && <Error message={errorMessage} onClose={() => {
