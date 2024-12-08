@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Post = new mongoose.Schema({
     title: {type: String, required: true, maxLength: 100},
     content: {type: String, required: true},
-    linkFlairID: {type: mongoose.Schema.Types.ObjectId, ref: 'LinkFlair'},
+    linkFlairID: {type: mongoose.Schema.Types.ObjectId, ref: 'LinkFlair', default: null},
     postedBy: {type: String, required: true},
     postedDate: {type: Date, required: true, default: Date.now},
     commentIDs: [{type: mongoose.Schema.Types.ObjectId, ref: 'Comment'}],
