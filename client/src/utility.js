@@ -285,6 +285,17 @@ export async function updatePost(postID, newData) {
   }
 }
 
+export async function addView(postID) {
+  try {
+    const response = await axios.put(`https://localhost:8000/posts/addView/${postID}`);
+    return response.data;
+  }
+  catch (error) {
+    console.error("Error adding view:", error);
+    throw error;
+  }
+}
+
 export async function createComment(newComment){
   try {
     const response = await axios.post('http://localhost:8000/comments/make', {

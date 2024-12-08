@@ -108,6 +108,21 @@ app.put("/posts/update/:postID", isAdminOrCreator, async (req, res) => {
     }
 });
 
+app.put("/posts/addView/:postID", async (req, res) => {
+    try {
+        const postID = req.params.postID;
+        const result = await PostModel.findByIdAndUpdate(
+            postID,
+            {$inc: {views: 1}}
+        );
+        if (!result) return res.json({error: "Post not found"});
+        res.json({message: "Success"});
+    }
+    catch (err) {
+        res.json({error: "Error adding view to post"});
+    }
+});
+
 app.delete("/posts/delete/:postID", isAdminOrCreator, async (req, res) => {
     try {
         const postID = req.params.postID;
