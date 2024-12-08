@@ -1,9 +1,9 @@
+import { useEffect, useMemo, useState } from 'react';
+import * as utils from '../utility.js';
 import DisplayPosts from './displayPosts.js';
 import SortButtons from './sortButtons.js';
-import { useMemo, useState, useEffect } from 'react';
-import * as utils from '../utility.js';
 
-export default function Search(props) {
+export default async function Search(props) {
     const query = props.query;
 
     const sortedPosts = (mode) => {
@@ -17,7 +17,11 @@ export default function Search(props) {
     }, [sortMode, props.postList]);
 
     useEffect(() => {
+        async function getPosts(postList){
+            // get all the stuff from post 
+        }
         setSortMode("newest");
+
     }, [props.query]);
 
     return (

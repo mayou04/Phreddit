@@ -277,8 +277,10 @@ export async function createPost(newPost){
 
 export async function updatePost(postID, newData) {
   try {
-      const response = await axios.put(`http://localhost:8000/posts/update/${postID}`, newData);
-      return response.data;
+    console.log(newData);
+    const response = await axios.put(`http://localhost:8000/posts/update/:${postID}`, newData);
+    console.log(response);
+    return response.data;
   } catch (error) {
       console.error('Error updating post:', error);
       throw error;

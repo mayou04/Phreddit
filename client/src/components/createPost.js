@@ -129,6 +129,7 @@ export default function CreatePost({mode}) {
                 <h5>Community: <span className="small">(required)</span></h5>
                 <select required defaultValue="" className="dropdown" id="communities-dropdown-field" onChange={(e) => setCommunityID(e.target.value)}>
                     <option value="" key="default" disabled>Select Community:</option>
+                    {/* JOINED COMMS FIRST */}
                     {communities.map((community) => { return (
                         <option value={community._id} key={community._id} className={"community"}>{community.name}</option>)
                      })}
@@ -157,6 +158,7 @@ export default function CreatePost({mode}) {
                 )}
                 <h5>Post Content: <span className="small">(required)</span></h5>
                 <textarea autoComplete="off" id="post-content-field" onChange={(e) => setPostContent(e.target.value)}></textarea>
+                {/* NO NEED, JUST USE USER'S */}
                 <h5>Post Creator: <span className="small">(required)</span></h5>
                 <input type="text" autoComplete="off" id="post-creator-field" onChange={(e) => setPostCreator(e.target.value)} />
                 <br/>

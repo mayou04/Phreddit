@@ -89,9 +89,9 @@ export default function DisplayPosts(props) {
 
     return (
         <div id="post-list">
+            {/* POSTLIST SORT BY COMMUNITY FIRST IF LOGGED IN (SUBLISTS AND THOSE HAVE TO BE NEWEST/OLDEST/ACTIVE) SEPARATE BETWEEN JOINED COMM AND RANDOM*/}
             {posts && posts.map((post, index) => {
                 return (post === undefined) ? <div>Loading...</div> : 
-                    
                     <div key={post._id}>
                         {(index === 0) ? <hr /> : <hr className="post-separator" />}
                         <div className="post" id={post._id} onClick={() => {
@@ -114,6 +114,7 @@ export default function DisplayPosts(props) {
                             })[1].content}</h5>}
                             <h4 className="post-content-preview">{postContent(post.content)}</h4>
                             <h5>
+                                {/* POST UPVOTES */}
                                 <span className="post-views">{post.views}</span>
                                 <span className="post-comments-count">{commentCounts.find(obj => {
                                 return obj[0] === post._id;

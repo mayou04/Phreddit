@@ -108,6 +108,11 @@ export default function Post(props) {
           <h4>
             {commentObject.content}
           </h4>
+          {/* UPVOTES HERE */}
+          {/* updoot: +1 upvote +5 rep
+          donvote: -1 upvote -10 rep
+          if <50 rep cant vote */}
+          {/* GREYED OUT IF GUEST */}
           <input id={commentObject._id} className={"reply-button"} type="button" value="Reply" onClick={() => {
             setSelectedID(postID);
             setPage(<CreateComment postID={postID} parent={commentObject}/>);
@@ -128,7 +133,12 @@ export default function Post(props) {
         {(post.linkFlairID === "000000000000000000000000") ? <h5 style={{display: "none"}}>{""}</h5> :
         <h5 className="post-flair">{linkFlair.content}</h5>}
         <h4 id="post-content" className="post-content">{post.content}</h4>
+        {/* UPVOTES, GREYED OUT */}
+        {/* updoot: +1 upvote +5 rep
+        donvote: -1 upvote -10 rep
+        if <50 rep cant vote */}
         <h5><span id="post-views">{post.views}</span><span id="post-comments-count">{commentCount}</span></h5>
+        {/* GREY THIS OUT IF GUEST */}
         <input type="button" className="create-comment-button" value="Add a Comment" onClick={() => {
           setSelectedID(postID);
           setPage(<CreateComment postID={postID} parent={post}/>);

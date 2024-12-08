@@ -24,6 +24,7 @@ export default function Community(props) {
             const sortedPosts = await utils.sortPosts(sortMode, postList);
             setPosts(sortedPosts);
             
+            // GET ALL JOINED COMMUNITIES AT THE TOP
         }
 
         fetchCommunity();
@@ -68,8 +69,10 @@ export default function Community(props) {
                 <SortButtons sortedPosts={sortedPosts} currentSortMode={sortMode} />
             </div>
             <p className="community-description">{community.description}</p>
+            {/* Display Name of Creator (User) */}
             <h5 className="community-date">{communityDate()}</h5>
             <p className="post-counter">{posts.length} post{(posts.length === 1) ? "" : "s"} shown • Members: {community.members.length}</p>
+            {/* join/leave if logged in */}
             <DisplayPosts setPostID={props.setPostID} postList={posts} isCommunity={true}/>
         </div>
     );

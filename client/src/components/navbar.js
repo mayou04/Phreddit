@@ -33,6 +33,7 @@ export default function Navbar(props) {
         if (communities === null){
             return;
         }
+        // ORDER BY JOINED FIRST
         return communities.map((community) => 
             <div className={"community-link" + ((selectedID === community._id) ? " selected" : "")} id={community._id} key={community._id} onClick={() => {
                 setSelectedID(community._id);
@@ -55,6 +56,7 @@ export default function Navbar(props) {
             <hr />
             <div className="communities-section">
                 <h2>Communities</h2>
+                {/* GREYED OUT FOR GUEST */}
                 <input type="button" className={"create-community-button" + ((selectedID === "createCommunity") ? " selected" : "")} value="Create Community" onClick={() => {
                     setSelectedID("createCommunity");
                     setPage(<CreateCommunity />);
