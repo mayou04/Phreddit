@@ -119,4 +119,31 @@ async function passwordMatches(useremail, password) {
     return isMatch;
 }
 
-module.exports = {queryPosts, queryComments, queryCommunities, queryLinkFlairs, queryUsers, passwordMatches};
+async function deleteCommentAndReplies(commentID) {
+    const comment = await CommentModel.findOne({ _id: commentID });
+    var replies = comment.commentIDs;
+    await comment.deleteOne();
+    for (let i = 0; i < replies.length; i++) {
+        await deleteCommentAndReplies(replies[i]);
+    }
+}
+
+async function deletePost(postID) {
+    const post = await PostModel.findOne({ _id: postID });
+    var comments = post.commentIDs;
+    await post.deleteOne();
+    for (let i = 0; i < comments.length; i++) {
+        await deleteCommentAndReplies(comments[i]);
+    }
+}
+
+async function deleteCommunity(communityID) {
+    const community = await CommunityModel.findOne({ _id: communityID });
+    var posts = community.postIDs;
+    await community.deleteOne();
+    for (let i = 0; i < posts.length; i++) {
+        await deletePost(posts[i]);
+    }
+}
+
+module.exports = {queryPosts, queryComments, queryCommunities, queryLinkFlairs, queryUsers, passwordMatches, deletePost, deleteCommentAndReplies, deleteCommunity};

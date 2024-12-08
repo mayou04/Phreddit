@@ -6,7 +6,7 @@ const app = express();
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const port = 8000;
-const {queryPosts, queryComments, queryCommunities, queryLinkFlairs, queryUsers, passwordMatches} = require('./queries.js');
+const {queryPosts, queryComments, queryCommunities, queryLinkFlairs, queryUsers, passwordMatches, deletePost, deleteCommentAndReplies, deleteCommunity} = require('./queries.js');
 const cors = require('cors');
 
 const CommunityModel = require('./models/communities');
@@ -25,7 +25,7 @@ app.use(session({
     cookie: {
         httpOnly: true,
         secure: false, // Since we aren't implementing HTTPS for this project
-        maxAge: 1000 /* ms */ * 60 /* sec */ * 60 /* min */ * 24 /* hours */,
+        maxAge: 1000 /* ms */ * 60 /* sec */ * 60 /* min */ * 6 /* hours */,
     }
 }));
 
@@ -69,7 +69,7 @@ const isLoggedIn = async (req, res, next) => {
 
 
 app.get("/", async (req, res) => {
-    res.send({});
+    res.json({message: "Running"});
 });
 
 app.get("/posts/", async (req, res) => {
@@ -108,10 +108,25 @@ app.put("/posts/update/:postID", isAdminOrCreator, async (req, res) => {
     }
 });
 
+app.put("/posts/addView/:postID", async (req, res) => {
+    try {
+        const postID = req.params.postID;
+        const result = await PostModel.findByIdAndUpdate(
+            postID,
+            {$inc: {views: 1}}
+        );
+        if (!result) return res.json({error: "Post not found"});
+        res.json({message: "Success"});
+    }
+    catch (err) {
+        res.json({error: "Error adding view to post"});
+    }
+});
+
 app.delete("/posts/delete/:postID", isAdminOrCreator, async (req, res) => {
     try {
         const postID = req.params.postID;
-        await PostModel.findByIdAndDelete(postID);
+        await deletePost(postID);
         res.json({message: "Post successfully deleted"});
     }
     catch (err) {
@@ -156,7 +171,7 @@ app.put("/communities/update/:communityID", isAdminOrCreator, async (req, res) =
 app.delete("/communities/delete/:communityID", isAdminOrCreator, async (req, res) => {
     try {
         const communityID = req.params.communityID;
-        await CommunityModel.findByIdAndDelete(communityID);
+        await deleteCommunity(communityID);
         res.json({message: "Community successfully deleted"});
     }
     catch (err) {
@@ -229,7 +244,7 @@ app.put("/comments/update/:commentID", isAdminOrCreator, async (req, res) => {
 app.delete("/comments/delete/:commentID", isAdminOrCreator, async (req, res) => {
     try {
         const commentID = req.params.commentID;
-        await CommentModel.findByIdAndDelete(commentID);
+        await deleteCommentAndReplies(commentID);
         res.json({message: "Comment successfully deleted"});
     }
     catch (err) {
