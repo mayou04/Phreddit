@@ -290,6 +290,7 @@ export async function updatePost(postID, newData) {
 export async function addView(postID) {
   try {
     const response = await axios.put(`https://localhost:8000/posts/addView/${postID}`);
+    console.log(postID);
     return response.data;
   }
   catch (error) {

@@ -95,8 +95,7 @@ export default function DisplayPosts(props) {
                     <div key={post._id}>
                         {(index === 0) ? <hr /> : <hr className="post-separator" />}
                         <div className="post" id={post._id} onClick={() => {
-                            post.views += 1; // push this from the actual place
-                            utils.updatePost(post._id, post);
+                            utils.addView(post._id);
                             setSelectedID(post._id);
                             setPage(<Post postID={post._id} post={post} community={communityList.find(obj => {
                                 return obj[0] === post._id;
