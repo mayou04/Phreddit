@@ -37,7 +37,7 @@ export default function Post(props) {
     const loadCommentsOnPostPage = async () => {
       const data = await utils.requestData("http://localhost:8000/comments");
       setComments(data);
-
+      // utils.addView(post._id);
       setPost(await utils.getPostObject(postID));
       let commentObjects = post.commentIDs.map((commentID) => {
         return data.find((obj) => {
@@ -101,6 +101,7 @@ export default function Post(props) {
       let leftMargin = depth*50 + "px";
   
       return (
+        // IDK IF REMOVE COMMEMNT ID
         <div key={commentObject._id} id={commentObject._id} className={"comment" + (depth > 0 ? " reply" : "")} style={{marginLeft: `${leftMargin}`}}>
           <h5>
             {commentObject.commentedBy} • {utils.getTimestamp(commentObject.commentedDate)}
@@ -113,6 +114,7 @@ export default function Post(props) {
           donvote: -1 upvote -10 rep
           if <50 rep cant vote */}
           {/* GREYED OUT IF GUEST */}
+          {/* IDK IF REMOVE ID */}
           <input id={commentObject._id} className={"reply-button"} type="button" value="Reply" onClick={() => {
             setSelectedID(postID);
             setPage(<CreateComment postID={postID} parent={commentObject}/>);

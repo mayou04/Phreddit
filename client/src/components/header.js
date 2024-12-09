@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { usePage } from '../contexts/pageContext.js';
 import { useSelectedID } from '../contexts/selectedIDContext.js';
 import * as utils from '../utility.js';
@@ -8,13 +9,16 @@ import Search from './search.js';
 export default function Header(props) {
     const {selectedID, setSelectedID} = useSelectedID();
     const {setPage} = usePage();
+    const [postList, setPostList] = useState([]);
 
-    function searchForResults(event) {
+    async function searchForResults(event) {
         if (event.key !== "Enter" || event.target.value === "") return;
         let search_query = event.target.value.toLowerCase().split(" ");
-        let postList = utils.getSearchResults(search_query);
+        let posts = await utils.getSearchResults(search_query);
+        setPostList(posts);
         setSelectedID(null);
-        setPage(<Search query={event.target.value} postList={postList} />);
+        console.log(posts);
+        setPage(<Search query={event.target.value} postList={posts} />);
         event.target.value = "";
     }
 

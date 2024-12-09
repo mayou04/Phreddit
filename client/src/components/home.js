@@ -24,15 +24,10 @@ export default function Home() {
         fetchData();
     }, []);
 
-    // const postList = useMemo(()=>
-    //     allPosts.map(obj => obj._id),
-    // [allPosts])
-
-    // console.log("Postlist: " + postList);
-
     useEffect(() => {
         async function sortPosts(){
             const sorted = await utils.sortPosts(sortMode, allPosts);
+            console.log(await sorted);
             setSortedList(sorted);
         }
         sortPosts();

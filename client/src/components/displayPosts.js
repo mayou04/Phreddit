@@ -6,7 +6,7 @@ import Post from './post.js';
 
 export default function DisplayPosts(props) {
     const postList = props.postList;
-    const postIDList = postList.map(obj => obj._id);
+    // const postIDList = postList.map(obj => obj._id);
     const isCommunity = props.isCommunity;
     const sortMode = props.sortMode;
 
@@ -29,26 +29,26 @@ export default function DisplayPosts(props) {
             // setFlairs(await utils.requestData("http://localhost:8000/linkflairs"));
             // setComments(await utils.requestData("http://localhost:8000/comments"));
 
-            for (const postID of postIDList){
-                const post = await utils.getPostObject(postID);
-                const community = await utils.getCommunityFromPost(postID);
-                const flair = await utils.getFlairObject(post.linkFlairID);
-                const commentCount = await utils.getCommentCountForPost(postID);
+            for (const postObject of postList){
+                const post = await utils.getPostObject(postObject._id); //redundant?
+                const community = await utils.getCommunityFromPost(postObject._id);
+                const flair = await utils.getFlairObject(postObject.linkFlairID); // changed all but this stayed the same?
+                const commentCount = await utils.getCommentCountForPost(postObject._id);
 
                 if (post) {
                     fetchedPosts.push(post);
                 }
 
                 if (community) {
-                    fetchedComms.push([postID, community]);
+                    fetchedComms.push([postObject._id, community]);
                 }
 
                 if (flair) {
-                    fetchedFlairs.push([postID, flair]);
+                    fetchedFlairs.push([postObject._id, flair]);
                 }
 
                 if (!(commentCount === undefined)) {
-                    fetchedCommCounts.push([postID, commentCount]);
+                    fetchedCommCounts.push([postObject._id, commentCount]);
                 }
                 
             }
@@ -95,7 +95,6 @@ export default function DisplayPosts(props) {
                     <div key={post._id}>
                         {(index === 0) ? <hr /> : <hr className="post-separator" />}
                         <div className="post" id={post._id} onClick={() => {
-                            utils.addView(post._id);
                             setSelectedID(post._id);
                             setPage(<Post postID={post._id} post={post} community={communityList.find(obj => {
                                 return obj[0] === post._id;

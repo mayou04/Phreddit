@@ -100,7 +100,8 @@ export async function getSearchResults(search_query) {
         return obj.content.toLowerCase().includes(term);
       });
       comments = comments.map(obj => {
-        return getPostFromComment(obj._id).postID;
+        console.log(getPostFromComment(obj._id));
+        return getPostFromComment(obj._id)._id;
       });
       resultsList = resultsList.concat(comments);
     }
@@ -108,6 +109,7 @@ export async function getSearchResults(search_query) {
     resultsList.forEach(id => {
       if (!removedDuplicates.includes(id)) removedDuplicates.push(id);
     });
+    console.log(removedDuplicates);
     return removedDuplicates;
 }
 
@@ -278,7 +280,7 @@ export async function createPost(newPost){
 export async function updatePost(postID, newData) {
   try {
     console.log(newData);
-    const response = await axios.put(`http://localhost:8000/posts/update/:${postID}`, newData);
+    const response = await axios.put(`http://localhost:8000/posts/update/${postID}`, newData);
     console.log(response);
     return response.data;
   } catch (error) {
@@ -289,7 +291,7 @@ export async function updatePost(postID, newData) {
 
 export async function addView(postID) {
   try {
-    const response = await axios.put(`https://localhost:8000/posts/addView/${postID}`);
+    const response = await axios.put(`http://localhost:8000/posts/addView/${postID}`);
     console.log(postID);
     return response.data;
   }
