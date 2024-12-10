@@ -146,4 +146,36 @@ async function deleteCommunity(communityID) {
     }
 }
 
-module.exports = {queryPosts, queryComments, queryCommunities, queryLinkFlairs, queryUsers, passwordMatches, deletePost, deleteCommentAndReplies, deleteCommunity};
+async function deleteUser(userID) {
+    const user = await UserModel.findOne({_id: userID});
+    var communities = getCommunitiesByCreator(user.name);
+    for (let i = 0; i < communities.length; i++) {
+        await deleteCommunity(communities[i]);
+    }
+    var posts = await PostModel.find({ postedBy: user.name });
+    for (let i = 0; i < posts.length; i++) {
+        await deletePost(posts[i]);
+    }
+    var comments = await CommentModel.find({ commentedBy: user.name });
+    for (let i = 0; i < comments.length; i++) {
+        await deleteCommentAndReplies(comments[i]);
+    }
+}
+
+async function getCommunitiesByMember(memberName) {
+    const communities = await CommunityModel.find({
+        members: {
+            $in: [memberName],
+        }
+    });
+    return communities;
+}
+
+async function getCommunitiesByCreator(creatorName) {
+    const communities = await CommunityModel.find({
+        createdBy: creatorName,
+    });
+    return communities;
+}
+
+module.exports = {queryPosts, queryComments, queryCommunities, queryLinkFlairs, queryUsers, passwordMatches, deletePost, deleteCommentAndReplies, deleteCommunity, deleteUser, getCommunitiesByMember, getCommunitiesByCreator};
