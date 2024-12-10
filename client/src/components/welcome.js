@@ -114,15 +114,16 @@ export default function Welcome(){
     }
     
     async function createUser(){
-        // let community = {};
-        // community.description = communityDescription;
-        // community.members = [];
-        // community.members.push(communityCreator);
-        // community.name = communityName;
-        // community.postIDs = [];
-        // community.startDate = new Date();
+        let user = {};
+        
+        user.name = displayName;
+        user.password = password;
+        user.email = email;
+        user.reputation = 100;
+        user.isAdmin = false;
+        user.joinedDate = new Date();
 
-        // //arg check
+        //arg check
         // if (communityName.length > 100) {
         //     return displayError("Community name cannot be more than 100 characters");
         // }
