@@ -395,9 +395,7 @@ export async function loginUser(email, password) {
       password: password
     });
 
-    console.log("A");
     if (response.data.error) {
-      console.log("B");
       throw new Error(response.data.error);
     }
 

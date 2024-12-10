@@ -142,7 +142,8 @@ body {
 
 }
 
-#banner #create-post-button {
+#banner #create-post-button,
+#banner #guest-create-post-button {
     float: right;
     border: none;
     width: auto;

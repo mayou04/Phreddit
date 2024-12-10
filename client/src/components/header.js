@@ -50,31 +50,16 @@ export default function Header(props) {
                         <input type="button" id="create-post-button" value="Profile" className={""} onClick={()=> {
                             setSelectedID("profile");
                             setPage(<Profile />);
-                        }}/> 
-                        {/* Profile button */}
-                        {/* LOGOUT BUTTON */}
+                        }}/>
                         <input type="button" id="create-post-button" value="Create Post" className={((selectedID === "createPost") ? " selected" : "")} onClick={()=> {
                             setSelectedID("createPost");
                             setPage(<CreatePost />);
                         }}/>  
                     </div> : 
                     <div>
-                        <input type="button" id="create-post-button" value="Log out" className={""} onClick={()=> {
-                            utils.logoutUser();
-                            setSelectedID("");
-                            setPage(<Welcome/>);
-                        }}/> 
-                        <input type="button" id="create-post-button" value="Profile" className={""} onClick={()=> {
-                            setSelectedID("profile");
-                            setPage(<Profile />);
-                        }}/> 
-                        {/* Profile button */}
-                        {/* LOGOUT BUTTON */}
-                        <input type="button" id="create-post-button" value="Create Post" className={((selectedID === "createPost") ? " selected" : "")} onClick={()=> {
-                            setSelectedID("createPost");
-                            setPage(<CreatePost />);
+                        <input type="button" id="guest-button" value="Guest" className={""} /> 
+                        <input type="button" id="guest-create-post-button" value="Create Post" className={((selectedID === "createPost") ? " selected" : "")} onClick={()=> {
                         }}/>  
-
                     </div> }
 
             </div>
