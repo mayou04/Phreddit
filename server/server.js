@@ -13,6 +13,7 @@ const CommunityModel = require('./models/communities');
 const PostModel = require('./models/posts');
 const CommentModel = require('./models/comments');
 const LinkFlairModel = require('./models/linkflairs');
+const UserModel = require('./models/users');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -79,7 +80,6 @@ const isLoggedIn = async (req, res, next) => {
     if (req.session.user) next();
     else res.json({error: "Not logged in"});
 };
-
 
 app.get("/", async (req, res) => {
     res.json({message: "Running"});
@@ -339,10 +339,7 @@ app.delete("/users/delete/:userID", isAdminOrSelf, async (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
-    console.log("A");
     try {
-        console.log(req);
-        console.log(res);
         let userDetails = req.body;
         let newReputation = 100;
         if (userDetails.isAdmin === true) newReputation = 1000;
@@ -354,7 +351,6 @@ app.post("/register", async (req, res) => {
             isAdmin: userDetails.isAdmin,
             joinedDate: userDetails.joinedDate,
         });
-        console.log(user);
         res.send(user.name);
     }
     catch (err) {
@@ -367,7 +363,6 @@ app.post("/login", async (req, res) => {
     isMatch = await passwordMatches(userDetails.email, userDetails.password);
     if (isMatch === false) return res.json({error: "Invalid password"});
 
-
     const user = await queryUsers({email: userDetails.email});
     req.session.user = {
         id: user._id,
@@ -378,11 +373,12 @@ app.post("/login", async (req, res) => {
 });
 
 app.get("/status", (req, res) => {
+    // res.json(req.session.user);
     if (req.session.user) return res.json({
         isLoggedIn: true,
         user: req.session.user,
     });
-    res.json({isLoggedIn: false, user: undefined});
+    return res.json({isLoggedIn: false, user: undefined});
 });
 
 app.post("/logout", (req, res) => {

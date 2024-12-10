@@ -154,6 +154,7 @@ body {
     color: #FFFFFF;
     font-weight: 550;
     transition: background-color 0.2s ease;
+    margin: 0px 1px;
 }
 
 #banner #create-post-button:hover {

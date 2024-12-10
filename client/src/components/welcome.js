@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { usePage } from "../contexts/pageContext.js";
 import { useSelectedID } from '../contexts/selectedIDContext.js';
+import * as utils from '../utility.js';
 import Error from './error.js';
 import Home from './home.js';
-import * as utils from '../utility.js';
 
 export default function Welcome(){
     const [pageState, setPageState] = useState("welcome");
@@ -90,11 +90,11 @@ export default function Welcome(){
         return (
             <div>
                 <div id="make-item">
-                    <input type="button" className={"go-back"} value="Go Back" onClick={() => {
-                        setPageState("welcome");
-                    }}/>
-                </div>
-                <div id="make-item">
+                    <div id="back-button">                
+                        <input type="button" className={"go-back"} value="Go Back" onClick={() => {
+                            setPageState("welcome");
+                        }}/>
+                    </div>
                     <h5>Email: <span className="small">(required)</span></h5>
                     <input type="text" autoComplete="off" id="email-field" onChange={(e) => {
                             setEmail(e.target.value);
@@ -131,7 +131,7 @@ export default function Welcome(){
             displayError("Last name cannot be empty");
         }
         else if (email.length === 0) {
-            displayError("Email name cannot be empty");
+            displayError("Email cannot be empty");
         }
         else if (!email.includes("@")) {
             displayError("Email not properly formatted");
@@ -149,17 +149,42 @@ export default function Welcome(){
             displayError("Password does not match");
         }
         else {
-            console.log(user);
-            const userID = await utils.registerUser(user); //USELESS RETURN?
-            console.log(userID);
+            let userID = await utils.registerUser(user);
             if (userID !== "Error making user"){
-                setPage(<Home/>);
+                setPage(<Welcome/>);
             }
         }
     }
 
-    async function logUserIn(){
+    async function logUserIn (){
+        let user = {};
+        
+        user.email = email;
+        user.password = password;
 
+        //arg check
+        if (email.length === 0) {
+            displayError("Email cannot be empty");
+        }
+        else if (!email.includes("@")) {
+            displayError("Email not properly formatted");
+        }
+        else if (password.length === 0) {
+            displayError("Password cannot be empty");
+        }
+        else {
+            let userID;
+            try {
+                userID = await utils.loginUser(email, password);
+                displayError("Account created.");
+                setPage(<Home/>);
+            } catch(err){
+                displayError("Error logging in");
+                
+            }
+            // if (userID !== "Error logging in"){
+            // }
+        }
     }
 
     return (

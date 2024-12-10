@@ -5,11 +5,14 @@ import * as utils from '../utility.js';
 import CreatePost from './createPost.js';
 import Home from './home.js';
 import Search from './search.js';
+import Profile from './profile.js';
+import Welcome from './welcome.js';
 
 export default function Header(props) {
     const {selectedID, setSelectedID} = useSelectedID();
     const {setPage} = usePage();
     const [postList, setPostList] = useState([]);
+    const status = utils.status();  
 
     async function searchForResults(event) {
         if (event.key !== "Enter" || event.target.value === "") return;
@@ -37,16 +40,43 @@ export default function Header(props) {
                 <input type="search" id="searchbar" className="bar" autoComplete="off" onKeyDown={searchForResults} placeholder="Search Phreddit..." />
             </div> 
             <div className="create-post">
-                {/* GUEST /  */}
-                {/* Create post grey if guest /  */}
-                {/* Profile button */}
-                {/* LOGOUT BUTTON */}
-                <input type="button" id="create-post-button" value="Create Post" className={((selectedID === "createPost") ? " selected" : "")} onClick={()=>
-                {
-                    setSelectedID("createPost");
-                    setPage(<CreatePost />);
-                }}
-                />
+                { (status.isLoggedIn) ? 
+                    <div>
+                        <input type="button" id="create-post-button" value="Log out" className={""} onClick={()=> {
+                            utils.logoutUser();
+                            setSelectedID("");
+                            setPage(<Welcome/>);
+                        }}/> 
+                        <input type="button" id="create-post-button" value="Profile" className={""} onClick={()=> {
+                            setSelectedID("profile");
+                            setPage(<Profile />);
+                        }}/> 
+                        {/* Profile button */}
+                        {/* LOGOUT BUTTON */}
+                        <input type="button" id="create-post-button" value="Create Post" className={((selectedID === "createPost") ? " selected" : "")} onClick={()=> {
+                            setSelectedID("createPost");
+                            setPage(<CreatePost />);
+                        }}/>  
+                    </div> : 
+                    <div>
+                        <input type="button" id="create-post-button" value="Log out" className={""} onClick={()=> {
+                            utils.logoutUser();
+                            setSelectedID("");
+                            setPage(<Welcome/>);
+                        }}/> 
+                        <input type="button" id="create-post-button" value="Profile" className={""} onClick={()=> {
+                            setSelectedID("profile");
+                            setPage(<Profile />);
+                        }}/> 
+                        {/* Profile button */}
+                        {/* LOGOUT BUTTON */}
+                        <input type="button" id="create-post-button" value="Create Post" className={((selectedID === "createPost") ? " selected" : "")} onClick={()=> {
+                            setSelectedID("createPost");
+                            setPage(<CreatePost />);
+                        }}/>  
+
+                    </div> }
+
             </div>
         </div>
     );

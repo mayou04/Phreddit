@@ -371,10 +371,82 @@ export async function registerUser(newUser){
       isAdmin: newUser.isAdmin,
       joinedDate: newUser.joinedDate,
     });
-    console.log(response.data);
     return response.data; // This will be the comment._id from the server
   } catch (error) {
       console.error('Error creating user:', error);
       throw error;
+  }
+}
+
+export async function status() {
+  try {
+    const response = await axios.get('http://localhost:8000/status');
+    return response.data;
+  } catch (error) {
+    console.error('Error checking login status:', error);
+    throw error;
+  }
+}
+
+export async function loginUser(email, password) {
+  try {
+    const response = await axios.post('http://localhost:8000/login', {
+      email: email,
+      password: password
+    });
+
+    console.log("A");
+    if (response.data.error) {
+      console.log("B");
+      throw new Error(response.data.error);
+    }
+
+    // Check if the login was successful
+    if (response.data.message === 'Login successful') {
+      // Fetch the updated user status
+      const statusResponse = await axios.get('http://localhost:8000/status');
+      console.log("C");
+      return statusResponse.data;
+    } else {
+      console.log("D");
+      throw new Error('Login failed');
+    }
+  } catch (error) {
+    console.log("E");
+    // console.error('Login error:', error);
+    throw error;
+  }
+}
+
+// app.post("/login", async (req, res) => {
+//   let userDetails = req.body;
+//   isMatch = await passwordMatches(userDetails.email, userDetails.password);
+//   if (isMatch === false) return res.json({error: "Invalid password"});
+
+//   const user = await queryUsers({email: userDetails.email});
+//   req.session.user = {
+//       id: user._id,
+//       name: user.name,
+//       isAdmin: user.isAdmin,
+//   };
+//   res.json({message: 'Login successful'});
+// });
+
+export async function logoutUser() {
+  try {
+    const response = await axios.post('http://localhost:8000/logout');
+    
+    if (response.data.message === "Successfully logged out") {
+      // Clear any client-side storage if needed
+      // For example, if you're using localStorage:
+      // localStorage.removeItem('user');
+      
+      return { success: true, message: response.data.message };
+    } else {
+      throw new Error('Logout failed');
+    }
+  } catch (error) {
+    console.error('Logout error:', error);
+    return { success: false, error: error.message };
   }
 }

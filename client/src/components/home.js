@@ -19,6 +19,8 @@ export default function Home() {
         } catch (error) {
             console.error("Error fetching posts:", error);
         }
+        const status = await utils.status();
+        console.log(await status);
     };
     useEffect(() => {
         fetchData();
