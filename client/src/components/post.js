@@ -8,18 +8,12 @@ export default function Post(props) {
   var postID = props.postID;
   const { setPage } = usePage();
   const { setSelectedID } = useSelectedID();
-  // const[post, setPost] = useState();
-  // const[community, setCommunity] = useState();
-  // const[linkFlair, setFlair] = useState();
-  // const[commentCount, setCommentCount] = useState();
   const[commentCount, setCommentCount] = useState(props.commentCount);  
   const[post, setPost] = useState(props.post);
   const community = props.community;
   const linkFlair = props.flair;
-  // const comments = props.comments; // ??
   const[comments, setComments] = useState([]);
   const[directComments, setDirectComments] = useState();
-  // let postComments;
 
   
   // const fetchData = async () => {

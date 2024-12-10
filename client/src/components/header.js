@@ -17,7 +17,6 @@ export default function Header(props) {
         let posts = await utils.getSearchResults(search_query);
         setPostList(posts);
         setSelectedID(null);
-        console.log(posts);
         setPage(<Search query={event.target.value} postList={posts} />);
         event.target.value = "";
     }

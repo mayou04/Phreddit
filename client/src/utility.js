@@ -100,7 +100,6 @@ export async function getSearchResults(search_query) {
         return obj.content.toLowerCase().includes(term);
       });
       comments = comments.map(obj => {
-        console.log(getPostFromComment(obj._id));
         return getPostFromComment(obj._id)._id;
       });
       resultsList = resultsList.concat(comments);
@@ -109,7 +108,6 @@ export async function getSearchResults(search_query) {
     resultsList.forEach(id => {
       if (!removedDuplicates.includes(id)) removedDuplicates.push(id);
     });
-    console.log(removedDuplicates);
     return removedDuplicates;
 }
 

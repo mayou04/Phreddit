@@ -6,10 +6,9 @@ import SortButtons from './sortButtons.js';
 export default function Search(props) {
     const postIDList = props.postList;
     const [postList, setPostList] = useState([]);
+    const [sortedList, setSortedList] = useState([]);
     const query = props.query;
     // const postList = props.postList;
-    console.log(postIDList);
-    console.log(query);
     // const[posts, setPosts] = useState([]);
     // const [sortedList, setSortedList] = useState([]);
 
@@ -19,14 +18,6 @@ export default function Search(props) {
 
     const [sortMode, setSortMode] = useState("newest");
 
-    // MAKE THIS A STATE
-
-    // FOR SOME REASON THIS SEARCH DOESNT WORK>>>>
-    // useMemo(() => {
-    //     setPostList(utils.sortPosts(sortMode, postList));
-    //     return [];
-    // }, [sortMode, props.postList]);
-
     useEffect(() => {
         async function getPosts(postList){
             // get all the stuff from post 
@@ -34,7 +25,6 @@ export default function Search(props) {
 
             // NOT SURE IF THEY COME SORTED ALR
             for (const postID of postList){
-                console.log(await postID);
                 const postObject = await utils.getPostObject(postID);
                 
                 if (postObject) {
@@ -51,10 +41,16 @@ export default function Search(props) {
         // setSortMode("newest");
 
         getPosts(postIDList);
-
-        // setSortedList(sortPosts());
-
     }, [props.query, sortMode]);
+
+    
+    useEffect(() => {
+        async function sortPosts(){
+            const sorted = await utils.sortPosts(sortMode, postList);
+            setSortedList(sorted);
+        }
+        sortPosts();
+    }, [sortMode, postList])
 
     return (
         <div className="view-posts">
@@ -63,7 +59,7 @@ export default function Search(props) {
                 <SortButtons sortedPosts={sortedPosts} currentSortMode={sortMode} />
             </div>
             <p className="post-counter">{postList.length} post{(postList.length === 1) ? "" : "s"} shown</p>
-            <DisplayPosts setPage={props.setPage} postList={postList} isCommunity={false} />
+            <DisplayPosts setPage={props.setPage} postList={sortedList} isCommunity={false} />
         </div>
     );
 }

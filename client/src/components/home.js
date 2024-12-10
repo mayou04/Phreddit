@@ -27,7 +27,6 @@ export default function Home() {
     useEffect(() => {
         async function sortPosts(){
             const sorted = await utils.sortPosts(sortMode, allPosts);
-            console.log(await sorted);
             setSortedList(sorted);
         }
         sortPosts();
@@ -36,26 +35,6 @@ export default function Home() {
     const sortedPosts = (mode) => {
         setSortMode(mode);
     }
-
-    // useEffect(()=> {
-    //     setSortedList(utils.sortPosts(sortMode, allPosts));
-    // }, [sortMode, allPosts])
-
-    
-    // Memoized posts based on the current sort mode
-    
-    // const posts = useMemo(() => {
-    //     return utils.sortPosts(sortMode, postList);
-    // }, [sortMode, postList]);
-
-
-    // let sortedFart;
-
-    // something here wrong... not switching
-    // console.log(sortedPostList);
-
-    // console.log((posts));
-    // console.log(sortedList);
 
     return (
         <div className="view-posts">

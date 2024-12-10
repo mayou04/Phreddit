@@ -664,7 +664,8 @@ body {
 }
 
 #make-item input[type="text"],
-#make-item textarea {
+#make-item textarea,
+#make-item input[type="password"] {
     font-family: "Noto Sans", sans-serif;
     font-size: 14px;
 }
@@ -672,6 +673,7 @@ body {
 #make-item h5 {
     font-family: "IBM Plex Sans", sans-serif;
     font-size: 20px;
+    margin-top: 20px;
 }
 
 #make-item .small {
@@ -706,7 +708,7 @@ body {
     font-weight: 550;
     border: none;
     font-size: 20px;
-    margin-top: 50px;
+    margin-top: 20px;
     transition: background-color 0.2s ease;
 }
 
@@ -723,4 +725,27 @@ body {
     font-family: "Noto Sans", sans-serif;
     font-size: 14px;
     height: 25px;
+}
+
+.welcome-page #welcome-text{
+    text-align: center;
+    font-size: 36px;
+    font-weight: 550;
+    padding: 10px;
+    margin-right: 20px;
+    overflow: hidden;
+    text-wrap: wrap;
+    text-overflow: ellipsis;
+}
+
+.welcome-page #login-options,
+.welcome-page #make-item{
+    text-align: center;
+}
+.welcome-page .login-button{
+    margin: 10px;
+}
+
+.welcome-page #back-button{
+    text-align: left;
 }

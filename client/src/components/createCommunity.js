@@ -29,7 +29,6 @@ export default function CreateCommunity() {
     
     async function submitCommunity(){
         let community = {};
-        // community.communityID = `community${model.data.communities.length + 1}`;
         community.description = communityDescription;
         community.members = [];
         community.members.push(communityCreator);
@@ -60,8 +59,6 @@ export default function CreateCommunity() {
             const communityID = await utils.createCommunity(community);
 
         setSelectedID(communityID);
-        // This sortPosts is freaky...
-        // const postList = community.postIDs.map(obj => utils.getPostObject(obj));
         setPage(<Community commId={communityID} posts={[]} />);
         }
     }
