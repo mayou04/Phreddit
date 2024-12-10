@@ -17,7 +17,10 @@ const UserModel = require('./models/users');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true   
+}));
 app.use(cookieParser());
 app.use(session({
     secret: "mIFIyqgeFaMLAxSICzBAwaFlu2VHwl", // Usually would store this in a non-public file, but it's needed for graders cloning the repo
@@ -133,6 +136,48 @@ app.put("/posts/addView/:postID", async (req, res) => {
     }
     catch (err) {
         res.json({error: "Error adding view to post"});
+    }
+});
+
+app.put("/posts/addUpvote/:postID", async (req, res) => {
+    try {
+        const postID = req.params.postID;
+        const result = await PostModel.findByIdAndUpdate(
+            postID,
+            {$inc: {voteCount: 1}},
+            {new: true}
+        );
+        if (!result) return res.json({error: "Post not found"});
+        const user = await UserModel.findOne({name: result.postedBy});
+        await UserModel.findByIdAndUpdate(
+            user._id,
+            {$inc: {reputation: 5}},
+        );
+        res.json({message: "Success"});
+    }
+    catch (err) {
+        res.json({error: "Error adding upvote to post"});
+    }
+});
+
+app.put("/posts/addDownvote/:postID", async (req, res) => {
+    try {
+        const postID = req.params.postID;
+        const result = await PostModel.findByIdAndUpdate(
+            postID,
+            {$inc: {voteCount: -1}},
+            {new: true}
+        );
+        if (!result) return res.json({error: "Post not found"});
+        const user = await UserModel.findOne({name: result.postedBy});
+        await UserModel.findByIdAndUpdate(
+            user._id,
+            {$inc: {reputation: -10}},
+        );
+        res.json({message: "Success"});
+    }
+    catch (err) {
+        res.json({error: "Error adding downvote to post"});
     }
 });
 
@@ -255,6 +300,48 @@ app.put("/comments/update/:commentID", isAdminOrCreator, async (req, res) => {
     }
 });
 
+app.put("/comments/addUpvote/:commentID", async (req, res) => {
+    try {
+        const commentID = req.params.commentID;
+        const result = await CommentModel.findByIdAndUpdate(
+            commentID,
+            {$inc: {voteCount: 1}},
+            {new: true}
+        );
+        if (!result) return res.json({error: "Comment not found"});
+        const user = await UserModel.findOne({name: result.commentedBy});
+        await UserModel.findByIdAndUpdate(
+            user._id,
+            {$inc: {reputation: 5}},
+        );
+        res.json({message: "Success"});
+    }
+    catch (err) {
+        res.json({error: "Error adding upvote to comment"});
+    }
+});
+
+app.put("/comments/addDownvote/:commentID", async (req, res) => {
+    try {
+        const commentID = req.params.commentID;
+        const result = await CommentModel.findByIdAndUpdate(
+            commentID,
+            {$inc: {voteCount: -1}},
+            {new: true}
+        );
+        if (!result) return res.json({error: "Comment not found"});
+        const user = await UserModel.findOne({name: result.commentedBy});
+        await UserModel.findByIdAndUpdate(
+            user._id,
+            {$inc: {reputation: -10}},
+        );
+        res.json({message: "Success"});
+    }
+    catch (err) {
+        res.json({error: "Error adding upvote to comment"});
+    }
+});
+
 app.delete("/comments/delete/:commentID", isAdminOrCreator, async (req, res) => {
     try {
         const commentID = req.params.commentID;
@@ -363,22 +450,24 @@ app.post("/login", async (req, res) => {
     isMatch = await passwordMatches(userDetails.email, userDetails.password);
     if (isMatch === false) return res.json({error: "Invalid password"});
 
-    const user = await queryUsers({email: userDetails.email});
+    const user = await UserModel.findOne({email: userDetails.email});
+    // console.log(user);
     req.session.user = {
         id: user._id,
         name: user.name,
         isAdmin: user.isAdmin,
     };
+    req.session.save();
     res.json({message: 'Login successful'});
 });
 
 app.get("/status", (req, res) => {
-    // res.json(req.session.user);
+    // console.log(req.session);
     if (req.session.user) return res.json({
         isLoggedIn: true,
         user: req.session.user,
     });
-    return res.json({isLoggedIn: false, user: undefined});
+    return res.json({isLoggedIn: false, user: null});
 });
 
 app.post("/logout", (req, res) => {
