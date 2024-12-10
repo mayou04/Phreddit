@@ -339,18 +339,22 @@ app.delete("/users/delete/:userID", isAdminOrSelf, async (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
+    console.log("A");
     try {
+        console.log(req);
+        console.log(res);
         let userDetails = req.body;
         let newReputation = 100;
-        if (userDetails.isAdmin === true) reputation = 1000;
+        if (userDetails.isAdmin === true) newReputation = 1000;
         const user = await UserModel.create({
             name: userDetails.name,
             password: userDetails.password,
             email: userDetails.email,
             reputation: newReputation,
             isAdmin: userDetails.isAdmin,
-            joinedDate: new Date(),
+            joinedDate: userDetails.joinedDate,
         });
+        console.log(user);
         res.send(user.name);
     }
     catch (err) {

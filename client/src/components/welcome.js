@@ -3,6 +3,7 @@ import { usePage } from "../contexts/pageContext.js";
 import { useSelectedID } from '../contexts/selectedIDContext.js';
 import Error from './error.js';
 import Home from './home.js';
+import * as utils from '../utility.js';
 
 export default function Welcome(){
     const [pageState, setPageState] = useState("welcome");
@@ -52,27 +53,27 @@ export default function Welcome(){
                         }}/>
                     </div>
                     <h5>First Name: <span className="small">(required)</span></h5>
-                    <input type="text" autoComplete="off" id="first-name-field" onClick={(e) => {
+                    <input type="text" autoComplete="off" id="first-name-field" onChange={(e) => {
                             setFirstName(e.target.value);
                     }}/>
                     <h5>Last Name: <span className="small">(required)</span></h5>
-                    <input type="text" autoComplete="off" id="last-name-field" onClick={(e) => {
+                    <input type="text" autoComplete="off" id="last-name-field" onChange={(e) => {
                             setLastName(e.target.value);
                         }}/>
                     <h5>Email: <span className="small">(required)</span></h5>
-                    <input type="text" autoComplete="off" id="email-field" onClick={(e) => {
+                    <input type="text" autoComplete="off" id="email-field" onChange={(e) => {
                             setEmail(e.target.value);
                         }}/>
                     <h5>Display Name: <span className="small">(required)</span></h5>
-                    <input type="text" autoComplete="off" id="display-name-field" onClick={(e) => {
+                    <input type="text" autoComplete="off" id="display-name-field" onChange={(e) => {
                             setDisplayName(e.target.value);
                         }}/>
                     <h5>Password: <span className="small">(required)</span></h5>
-                    <input type="password" autoComplete="off" id="password-field" onClick={(e) => {
+                    <input type="password" autoComplete="off" id="password-field" onChange={(e) => {
                             setPassword(e.target.value);
                         }}/>
                     <h5>Retype Password: <span className="small">(required)</span></h5>
-                    <input type="password" autoComplete="off" id="retype-password-field" onClick={(e) => {
+                    <input type="password" autoComplete="off" id="retype-password-field" onChange={(e) => {
                             setRetypedPassword(e.target.value);
                         }}/>
                     <br/>
@@ -95,11 +96,11 @@ export default function Welcome(){
                 </div>
                 <div id="make-item">
                     <h5>Email: <span className="small">(required)</span></h5>
-                    <input type="text" autoComplete="off" id="email-field" onClick={(e) => {
+                    <input type="text" autoComplete="off" id="email-field" onChange={(e) => {
                             setEmail(e.target.value);
                         }}/>
                     <h5>Password: <span className="small">(required)</span></h5>
-                    <input type="password" autoComplete="off" id="password-field" onClick={(e) => {
+                    <input type="password" autoComplete="off" id="password-field" onChange={(e) => {
                             setPassword(e.target.value);
                         }}/>
                     <br/>
@@ -119,35 +120,42 @@ export default function Welcome(){
         user.name = displayName;
         user.password = password;
         user.email = email;
-        user.reputation = 100;
         user.isAdmin = false;
         user.joinedDate = new Date();
 
         //arg check
-        // if (communityName.length > 100) {
-        //     return displayError("Community name cannot be more than 100 characters");
-        // }
-        // else if (communityName.length === 0) {
-        //     displayError("Community name cannot be empty");
-        // }
-        // else if (await utils.communityNameExists(communities, communityName)) {
-        //     displayError("Community with this name already exists");
-        // }
-        // else if (communityDescription.length > 500) {
-        //     displayError("Community description cannot be more than 500 characters");
-        // }
-        // else if (communityDescription.length === 0) {
-        //     displayError("Community description cannot be empty");
-        // }
-        // else if (community.members[0] === "") {
-        //     displayError("Must specify username of community creator");
-        // }
-        // else {
-        //     const communityID = await utils.createCommunity(community);
-
-        //     setSelectedID(communityID);
-        //     setPage(<Community commId={communityID} posts={[]} />);
-        // }
+        if (firstName.length === 0) {
+            return displayError("First name cannot be empty");
+        }
+        else if (lastName.length === 0) {
+            displayError("Last name cannot be empty");
+        }
+        else if (email.length === 0) {
+            displayError("Email name cannot be empty");
+        }
+        else if (!email.includes("@")) {
+            displayError("Email not properly formatted");
+        }
+        else if (displayName.length === 0) {
+            displayError("Display name cannot be empty");
+        }
+        else if (password.length === 0) {
+            displayError("Password cannot be empty");
+        }
+        else if (password.includes(firstName) || password.includes(lastName) || password.includes(displayName) || password.includes(email.split("@")[0])) {
+            displayError("Password cannot include first name, last name, display name, and email ID");
+        }
+        else if (password !== retypedPassword) {
+            displayError("Password does not match");
+        }
+        else {
+            console.log(user);
+            const userID = await utils.registerUser(user); //USELESS RETURN?
+            console.log(userID);
+            if (userID !== "Error making user"){
+                setPage(<Home/>);
+            }
+        }
     }
 
     async function logUserIn(){

@@ -361,3 +361,20 @@ export async function createLinkFlair(newLinkFlair){
     throw error;
   }
 }
+
+export async function registerUser(newUser){
+  try {
+    const response = await axios.post('http://localhost:8000/register', {
+      name: newUser.name,
+      password: newUser.password,
+      email: newUser.email,
+      isAdmin: newUser.isAdmin,
+      joinedDate: newUser.joinedDate,
+    });
+    console.log(response.data);
+    return response.data; // This will be the comment._id from the server
+  } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+  }
+}
