@@ -15,10 +15,14 @@ import axios from "axios";
 //   fetchData();
 // }, [])
 
+const api = axios.create({
+  withCredentials: true,
+});
+
 
 export async function requestData(url) {
   try {
-    const response = await axios.get(url);
+    const response = await api.get(url);
     return response.data;
   }
   catch (err) {
@@ -259,7 +263,7 @@ export function displayError(errorString) {
 
 export async function createPost(newPost){
   try {
-    const response = await axios.post('http://localhost:8000/posts/make', {
+    const response = await api.post('http://localhost:8000/posts/make', {
       title: newPost.title,
       content: newPost.content,
       postedBy: newPost.postedBy,
@@ -278,7 +282,7 @@ export async function createPost(newPost){
 export async function updatePost(postID, newData) {
   try {
     console.log(newData);
-    const response = await axios.put(`http://localhost:8000/posts/update/${postID}`, newData);
+    const response = await api.put(`http://localhost:8000/posts/update/${postID}`, newData);
     console.log(response);
     return response.data;
   } catch (error) {
@@ -289,8 +293,8 @@ export async function updatePost(postID, newData) {
 
 export async function addView(postID) {
   try {
-    const response = await axios.put(`http://localhost:8000/posts/addView/${postID}`);
-    console.log(postID);
+    const response = await api.put(`http://localhost:8000/posts/addView/${postID}`);
+    // console.log(postID);
     return response.data;
   }
   catch (error) {
@@ -299,9 +303,57 @@ export async function addView(postID) {
   }
 }
 
+export async function upvotePost(postID) {
+  try {
+    const response = await api.put(`http://localhost:8000/posts/addUpvote/${postID}`);
+    // console.log(postID);
+    return response.data;
+  }
+  catch (error) {
+    console.error("Error adding upvote:", error);
+    throw error;
+  }
+}
+
+export async function downvotePost(postID) {
+  try {
+    const response = await api.put(`http://localhost:8000/posts/addDownvote/${postID}`);
+    // console.log(postID);
+    return response.data;
+  }
+  catch (error) {
+    console.error("Error adding downvote:", error);
+    throw error;
+  }
+}
+
+export async function upvoteComment(commentID) {
+  try {
+    const response = await api.put(`http://localhost:8000/comments/addUpvote/${commentID}`);
+    // console.log(commentID);
+    return response.data;
+  }
+  catch (error) {
+    console.error("Error adding upvote:", error);
+    throw error;
+  }
+}
+
+export async function downvoteComment(commentID) {
+  try {
+    const response = await api.put(`http://localhost:8000/comments/addDownvote/${commentID}`);
+    // console.log(commentID);
+    return response.data;
+  }
+  catch (error) {
+    console.error("Error adding downvote:", error);
+    throw error;
+  }
+}
+
 export async function createComment(newComment){
   try {
-    const response = await axios.post('http://localhost:8000/comments/make', {
+    const response = await api.post('http://localhost:8000/comments/make', {
       content: newComment.content,
       commentedBy: newComment.commentedBy,
       commentedDate: new Date(),
@@ -316,7 +368,7 @@ export async function createComment(newComment){
 
 export async function updateComment(commentID, newData) {
   try {
-    const response = await axios.put(`http://localhost:8000/comments/update/${commentID}`, newData);
+    const response = await api.put(`http://localhost:8000/comments/update/${commentID}`, newData);
     return response.data;
   } catch (error) {
       console.error('Error updating comment:', error);
@@ -326,7 +378,7 @@ export async function updateComment(commentID, newData) {
 
 export async function createCommunity(newCommunity){
   try {
-    const response = await axios.post('http://localhost:8000/communities/make', {
+    const response = await api.post('http://localhost:8000/communities/make', {
       name: newCommunity.name,
       description: newCommunity.description,
       startDate: new Date(),
@@ -342,7 +394,7 @@ export async function createCommunity(newCommunity){
 
 export async function updateCommunity(communityID, newData) {
   try {
-    const response = await axios.put(`http://localhost:8000/communities/update/${communityID}`, newData);
+    const response = await api.put(`http://localhost:8000/communities/update/${communityID}`, newData);
     return response.data;
   } catch (error) {
       console.error('Error updating comment:', error);
@@ -352,7 +404,7 @@ export async function updateCommunity(communityID, newData) {
 
 export async function createLinkFlair(newLinkFlair){
   try {
-    const response = await axios.post('http://localhost:8000/linkflairs/make', {
+    const response = await api.post('http://localhost:8000/linkflairs/make', {
       content: newLinkFlair.content,
     });
     return response.data; // This will be the comment._id from the server
@@ -364,7 +416,7 @@ export async function createLinkFlair(newLinkFlair){
 
 export async function registerUser(newUser){
   try {
-    const response = await axios.post('http://localhost:8000/register', {
+    const response = await api.post('http://localhost:8000/register', {
       name: newUser.name,
       password: newUser.password,
       email: newUser.email,
@@ -380,7 +432,7 @@ export async function registerUser(newUser){
 
 export async function status() {
   try {
-    const response = await axios.get('http://localhost:8000/status');
+    const response = await api.get('http://localhost:8000/status');
     return response.data;
   } catch (error) {
     console.error('Error checking login status:', error);
@@ -388,22 +440,23 @@ export async function status() {
   }
 }
 
-export async function loginUser(email, password) {
+export async function loginUser(userEmail, userPassword) {
   try {
-    const response = await axios.post('http://localhost:8000/login', {
-      email: email,
-      password: password
-    });
+    const response = await api.post('http://localhost:8000/login', {
+      email: userEmail,
+      password: userPassword
+    }, {withCredentials: true});
 
     if (response.data.error) {
       throw new Error(response.data.error);
     }
 
     // Check if the login was successful
+    console.log(response.data);
     if (response.data.message === 'Login successful') {
       // Fetch the updated user status
-      const statusResponse = await axios.get('http://localhost:8000/status');
-      console.log("C");
+      const statusResponse = await api.get('http://localhost:8000/status');
+      console.log(statusResponse.data);
       return statusResponse.data;
     } else {
       console.log("D");
@@ -432,7 +485,7 @@ export async function loginUser(email, password) {
 
 export async function logoutUser() {
   try {
-    const response = await axios.post('http://localhost:8000/logout');
+    const response = await api.post('http://localhost:8000/logout');
     
     if (response.data.message === "Successfully logged out") {
       // Clear any client-side storage if needed
