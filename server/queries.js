@@ -146,4 +146,20 @@ async function deleteCommunity(communityID) {
     }
 }
 
-module.exports = {queryPosts, queryComments, queryCommunities, queryLinkFlairs, queryUsers, passwordMatches, deletePost, deleteCommentAndReplies, deleteCommunity};
+async function getCommunitiesByMember(memberName) {
+    const communities = await CommunityModel.find({
+        members: {
+            $in: [memberName],
+        }
+    });
+    return communities;
+}
+
+async function getCommunitiesByCreator(creatorName) {
+    const communities = await CommunityModel.find({
+        createdBy: creatorName,
+    });
+    return communities;
+}
+
+module.exports = {queryPosts, queryComments, queryCommunities, queryLinkFlairs, queryUsers, passwordMatches, deletePost, deleteCommentAndReplies, deleteCommunity, getCommunitiesByMember, getCommunitiesByCreator};

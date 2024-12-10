@@ -6,7 +6,7 @@ const app = express();
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const port = 8000;
-const {queryPosts, queryComments, queryCommunities, queryLinkFlairs, queryUsers, passwordMatches, deletePost, deleteCommentAndReplies, deleteCommunity} = require('./queries.js');
+const {queryPosts, queryComments, queryCommunities, queryLinkFlairs, queryUsers, passwordMatches, deletePost, deleteCommentAndReplies, deleteCommunity, getCommunitiesByMember, getCommunitiesByCreator} = require('./queries.js');
 const cors = require('cors');
 
 const CommunityModel = require('./models/communities');
@@ -35,12 +35,26 @@ const isAdminOrCreator = async (req, res, next) => {
 
     const { itemId } = req.params;
     var item = await PostModel.findById(itemId);
-    if (!item) item = await CommunityModel.findById(itemId);
     if (!item) item = await CommentModel.findById(itemId);
     if (!item) item = await LinkFlairModel.findById(itemId);
     if (!item) return res.json({error: "Item not found"});
 
     if (user.isAdmin || item.postedBy.toString() === user.name) {
+        return next(); // User is authorized
+    }
+
+    res.json({error: "No permission to modify this item"});
+};
+
+const isAdminOrCommunityCreator = async (req, res, next) => {
+    const { user } = req.session;
+    if (!user) return res.json({error: "Unauthorized"});
+
+    const { itemId } = req.params;
+    if (!item) item = await CommunityModel.findById(itemId);
+    if (!item) return res.json({error: "Item not found"});
+
+    if (user.isAdmin || item.createdBy.toString() === user.name) {
         return next(); // User is authorized
     }
 
@@ -147,7 +161,8 @@ app.post("/communities/make", isLoggedIn, async (req, res) => {
             description: newCommunity.description,
             postIDs: newCommunity.postIDs,
             startDate: newCommunity.startDate,
-            members: newCommunity.members
+            members: newCommunity.members,
+            createdBy: req.session.user.name,
         });
         res.send(community._id);
     }
@@ -156,7 +171,7 @@ app.post("/communities/make", isLoggedIn, async (req, res) => {
     }
 });
 
-app.put("/communities/update/:communityID", isAdminOrCreator, async (req, res) => {
+app.put("/communities/update/:communityID", isAdminOrCommunityCreator, async (req, res) => {
     try {
         const communityID = req.params.communityID;
         const newData = req.body;
@@ -168,7 +183,7 @@ app.put("/communities/update/:communityID", isAdminOrCreator, async (req, res) =
     }
 });
 
-app.delete("/communities/delete/:communityID", isAdminOrCreator, async (req, res) => {
+app.delete("/communities/delete/:communityID", isAdminOrCommunityCreator, async (req, res) => {
     try {
         const communityID = req.params.communityID;
         await deleteCommunity(communityID);
@@ -183,8 +198,8 @@ app.post("/communities/join/:communityID", isLoggedIn, async (req, res) => {
     try {
         const community = await CommunityModel.findById(req.params.communityID);
         if (!community) return res.json({error: "Community not found"});
-        if (!community.members.includes(req.session.user.id)) {
-            community.members.push(req.session.user.id);
+        if (!community.members.includes(req.session.user.name)) {
+            community.members.push(req.session.user.name);
             await community.save();
         }
         res.json({message: "Joined community"});
@@ -198,7 +213,7 @@ app.post("/communities/leave/:communityID", isLoggedIn, async (req, res) => {
         const community = await CommunityModel.findById(req.params.communityID);
         if (!community) return res.json({error: "Community not found"});
         community.members = community.members.filter(
-            (member) => (member !== req.session.user.id)
+            (member) => (member !== req.session.user.name)
         );
         await community.save();
         res.json({message: "Left community"});
@@ -281,7 +296,9 @@ app.get("/users/byName/:userName", async (req, res) => {
         const user = await UserModel.find({name: req.params.userName}).select("-password");
         const posts = await PostModel.find({ postedBy: user.name });
         const comments = await CommentModel.find({ commentedBy: user.name });
-        res.json({user, posts, comments});
+        const memberOfCommunities = await getCommunitiesByMember(user.name);
+        const creatorOfCommunities = await getCommunitiesByCreator(user.name);
+        res.json({user, posts, comments, memberOfCommunities, creatorOfCommunities});
     } catch (err) {
         res.json({error: "Error fetching user profile"});
     }
@@ -292,29 +309,11 @@ app.get("/users/byID/:userID", async (req, res) => {
         const user = await UserModel.findById(req.params.userID).select("-password");
         const posts = await PostModel.find({ postedBy: user.name });
         const comments = await CommentModel.find({ commentedBy: user.name });
-        res.json({user, posts, comments});
+        const memberOfCommunities = await getCommunitiesByMember(user.name);
+        const creatorOfCommunities = await getCommunitiesByCreator(user.name);
+        res.json({user, posts, comments, memberOfCommunities, creatorOfCommunities});
     } catch (err) {
         res.json({error: "Error fetching user profile"});
-    }
-});
-
-app.post("/users/make", async (req, res) => {
-    try {
-        let userDetails = req.body;
-        let newReputation = 100;
-        if (userDetails.isAdmin === true) reputation = 1000;
-        const user = await UserModel.create({
-            name: userDetails.name,
-            password: userDetails.password,
-            email: userDetails.email,
-            reputation: newReputation,
-            isAdmin: userDetails.isAdmin,
-            joinedDate: new Date(),
-        });
-        res.send(user.name);
-    }
-    catch (err) {
-        res.json({error: "Error making user"});
     }
 });
 
@@ -337,6 +336,26 @@ app.delete("/users/delete/:userID", isAdminOrSelf, async (req, res) => {
     }
     catch (err) {
         res.json({error: "Error deleting user"});
+    }
+});
+
+app.post("/register", async (req, res) => {
+    try {
+        let userDetails = req.body;
+        let newReputation = 100;
+        if (userDetails.isAdmin === true) reputation = 1000;
+        const user = await UserModel.create({
+            name: userDetails.name,
+            password: userDetails.password,
+            email: userDetails.email,
+            reputation: newReputation,
+            isAdmin: userDetails.isAdmin,
+            joinedDate: new Date(),
+        });
+        res.send(user.name);
+    }
+    catch (err) {
+        res.json({error: "Error making user"});
     }
 });
 
