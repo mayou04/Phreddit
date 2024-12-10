@@ -6,7 +6,7 @@ const app = express();
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const port = 8000;
-const {queryPosts, queryComments, queryCommunities, queryLinkFlairs, queryUsers, passwordMatches, deletePost, deleteCommentAndReplies, deleteCommunity, getCommunitiesByMember, getCommunitiesByCreator} = require('./queries.js');
+const {queryPosts, queryComments, queryCommunities, queryLinkFlairs, queryUsers, passwordMatches, deletePost, deleteCommentAndReplies, deleteCommunity, deleteUser, getCommunitiesByMember, getCommunitiesByCreator} = require('./queries.js');
 const cors = require('cors');
 
 const CommunityModel = require('./models/communities');
@@ -36,10 +36,9 @@ const isAdminOrCreator = async (req, res, next) => {
     const { itemId } = req.params;
     var item = await PostModel.findById(itemId);
     if (!item) item = await CommentModel.findById(itemId);
-    if (!item) item = await LinkFlairModel.findById(itemId);
     if (!item) return res.json({error: "Item not found"});
 
-    if (user.isAdmin || item.postedBy.toString() === user.name) {
+    if (user.isAdmin || item.postedBy.toString() === user.name || item.commentedBy.toString() === user.name) {
         return next(); // User is authorized
     }
 
@@ -331,7 +330,7 @@ app.put("/users/update/:userID", isAdminOrSelf, async (req, res) => {
 app.delete("/users/delete/:userID", isAdminOrSelf, async (req, res) => {
     try {
         const userID = req.params.userID;
-        await UserModel.findByIdAndDelete(userID);
+        await deleteUser(userID);
         res.json({message: "User successfully deleted"});
     }
     catch (err) {
