@@ -113,7 +113,7 @@ export default function Welcome(){
         )
 
     }
-    
+
     async function createUser(){
         let user = {};
         
@@ -151,6 +151,7 @@ export default function Welcome(){
         else {
             let userID = await utils.registerUser(user);
             if (userID !== "Error making user"){
+                displayError("Account created.");
                 setPage(<Welcome/>);
             }
         }
@@ -174,16 +175,15 @@ export default function Welcome(){
         }
         else {
             let userID;
-            try {
-                userID = await utils.loginUser(email, password);
-                displayError("Account created.");
-                setPage(<Home/>);
-            } catch(err){
+            user = await utils.loginUser(email, password);
+            if (userID === "Login failed"){
                 displayError("Error logging in");
-                
+            } else {
+                console.log(await utils.status());
+                setPage(<Home/>);
             }
-            // if (userID !== "Error logging in"){
-            // }
+                
+            
         }
     }
 

@@ -452,36 +452,18 @@ export async function loginUser(userEmail, userPassword) {
     }
 
     // Check if the login was successful
-    console.log(response.data);
     if (response.data.message === 'Login successful') {
       // Fetch the updated user status
       const statusResponse = await api.get('http://localhost:8000/status');
-      console.log(statusResponse.data);
       return statusResponse.data;
     } else {
-      console.log("D");
       throw new Error('Login failed');
     }
   } catch (error) {
-    console.log("E");
     // console.error('Login error:', error);
     throw error;
   }
 }
-
-// app.post("/login", async (req, res) => {
-//   let userDetails = req.body;
-//   isMatch = await passwordMatches(userDetails.email, userDetails.password);
-//   if (isMatch === false) return res.json({error: "Invalid password"});
-
-//   const user = await queryUsers({email: userDetails.email});
-//   req.session.user = {
-//       id: user._id,
-//       name: user.name,
-//       isAdmin: user.isAdmin,
-//   };
-//   res.json({message: 'Login successful'});
-// });
 
 export async function logoutUser() {
   try {

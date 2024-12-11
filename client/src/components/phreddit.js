@@ -11,15 +11,18 @@ function Content() {
   const {currentPage} = usePage();
   const [status, setStatus] = useState([]);
 
-  // useEffect(async () => {
-  //   setStatus(utils.status());
-  //   console.log(status);
-  // }, [utils.status().isLoggedIn])
+  useEffect(() => {
+    async function getStatus() {
+      const statusResponse = await utils.status();
+      setStatus(await statusResponse);
+      console.log(statusResponse);
+    }
+    getStatus();
+  }, [utils.status().isLoggedIn])
 
 
   return (
     <div id="content">
-      {(status.isLoggedIn) ? console.log("A") : console.log(status)}
       {currentPage || ((status.isLoggedIn) ?  <Home/> : <Welcome/>)}
     </div>
   );

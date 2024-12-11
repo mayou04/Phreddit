@@ -8,6 +8,7 @@ export default function Home() {
     const { setPage } = usePage();
     const [allPosts, setAllPosts] = useState([]);
     const [sortedList, setSortedList] = useState([]);
+    const [status, setStatus] = useState([]);
 
     // State to hold the current sorting mode
     const [sortMode, setSortMode] = useState("newest");
@@ -19,12 +20,18 @@ export default function Home() {
         } catch (error) {
             console.error("Error fetching posts:", error);
         }
-        const status = await utils.status();
-        console.log(await status);
     };
     useEffect(() => {
         fetchData();
     }, []);
+    
+    useEffect(() => {
+        async function getStatus() {
+        const statusResponse = await utils.status();
+        setStatus(await statusResponse);
+        }
+        getStatus();
+    }, [utils.status().isLoggedIn])
 
     useEffect(() => {
         async function sortPosts(){

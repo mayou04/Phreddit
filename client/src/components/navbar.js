@@ -13,6 +13,7 @@ function Members(props) {
 
 export default function Navbar(props) {
     const {selectedID, setSelectedID} = useSelectedID();
+    const [status, setStatus] = useState(utils.status());  
     const {setPage} = usePage();
     const [communities, setCommunities] = useState([]);
 
@@ -45,6 +46,42 @@ export default function Navbar(props) {
         )
     }
 
+    // Remove the status check from dependency array and use a proper tracking method
+    useEffect(() => {
+        const checkStatus = async () => {
+            try {
+                const statusResponse = await utils.status();
+                setStatus(statusResponse);
+                setIsLoggedIn(statusResponse.isLoggedIn);
+            } catch (error) {
+                console.error("Error fetching status:", error);
+            }
+        };
+
+        checkStatus();
+        
+        // Set up an interval to check status periodically
+        const intervalId = setInterval(checkStatus, 1000);
+        
+        // Cleanup interval on component unmount
+        return () => clearInterval(intervalId);
+    }, []); // Empty dependency array since we're using interval
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            if (status.user) {
+                const users = await utils.requestData("http://localhost:8000/users");
+                const currentUser = users.find(user => user.name === status.user);
+                setProfile(currentUser);
+            }
+        };
+
+        fetchUser();
+    }, [status.user]); // Only run when status.user changes
+
+
+
+
     return (
         <div id="left-sidebar">
             <div className="home-section">
@@ -57,6 +94,13 @@ export default function Navbar(props) {
             <div className="communities-section">
                 <h2>Communities</h2>
                 {/* GREYED OUT FOR GUEST */}
+                {(status.isLoggedIn) ? 
+                <div>
+                    
+                </div> :
+                <div>
+                    
+                </div>}
                 <input type="button" className={"create-community-button" + ((selectedID === "createCommunity") ? " selected" : "")} value="Create Community" onClick={() => {
                     setSelectedID("createCommunity");
                     setPage(<CreateCommunity />);

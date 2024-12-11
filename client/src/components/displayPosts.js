@@ -114,7 +114,7 @@ export default function DisplayPosts(props) {
                             })[1].content}</h5>}
                             <h4 className="post-content-preview">{postContent(post.content)}</h4>
                             <h5>
-                                {/* POST UPVOTES */}
+                                <span className="post-votes">{post.voteCount}</span>
                                 <span className="post-views">{post.views}</span>
                                 <span className="post-comments-count">{commentCounts.find(obj => {
                                 return obj[0] === post._id;

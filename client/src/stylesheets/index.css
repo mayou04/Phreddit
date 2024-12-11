@@ -143,7 +143,8 @@ body {
 }
 
 #banner #create-post-button,
-#banner #guest-create-post-button {
+#banner #guest-create-post-button,
+#banner #guest-button {
     float: right;
     border: none;
     width: auto;
@@ -470,7 +471,13 @@ body {
 #content #post-views,
 #content #post-comments-count,
 #content .post-views,
-#content .post-comments-count {
+#content .post-comments-count,
+#content #post-upvotes,
+#content .post-upvotes,
+#content #post-votes,
+#content .post-votes,
+#content #post-downvotes,
+#content .post-downvotes {
     padding: 5px 10px 5px 30px;
     border-radius: 10px;
     background-color: #E8E9EB;
@@ -491,6 +498,31 @@ body {
     background-position: 6px 2px;
     background-size: 22px;
 }
+
+#content #post-votes,
+#content .post-votes {
+    background-image: url('data:image/svg+xml,<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="%23000" d="M12 4l-6 6 6 6 6-6-6-6zm0 16l-6-6 6 6 6-6-6 6z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: 6px 5px;
+    background-size: 22px;
+}
+
+#content #post-upvotes,
+#content .post-upvotes {
+    background-image: url('data:image/svg+xml,<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="%23000" d="M7 18l5-5 5 5M7 11l5-5 5 5"/></svg>');
+    background-repeat: no-repeat;
+    background-position: 6px 3px;
+    background-size: 22px;
+}
+
+#content #post-downvotes,
+#content .post-downvotes {
+    background-image: url('data:image/svg+xml,<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="%23000" d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>');
+    background-repeat: no-repeat;
+    background-position: 6px 3px;
+    background-size: 22px;
+}
+
 
 .view-posts .community-date {
     margin-top: 0px;

@@ -3,9 +3,11 @@ import { usePage } from '../contexts/pageContext.js';
 import { useSelectedID } from '../contexts/selectedIDContext.js';
 import * as utils from '../utility.js';
 import CreateComment from './createComment.js';
+import Comment from './comment.js';
 
 export default function Post(props) {
   var postID = props.postID;
+  const [postVotes, setPostVotes] = useState(props.post.voteCount);
   const { setPage } = usePage();
   const { setSelectedID } = useSelectedID();
   const[commentCount, setCommentCount] = useState(props.commentCount);  
@@ -31,7 +33,6 @@ export default function Post(props) {
     const loadCommentsOnPostPage = async () => {
       const data = await utils.requestData("http://localhost:8000/comments");
       setComments(data);
-      // utils.addView(post._id);
       setPost(await utils.getPostObject(postID));
       let commentObjects = post.commentIDs.map((commentID) => {
         return data.find((obj) => {
@@ -90,31 +91,7 @@ export default function Post(props) {
       
     // Returns a comment component
     function displayComment(commentObject, depth) {
-      // console.log("displaying: " + commentObject.content + " \ndepth: " + depth)
-      // let comment = utils.getCommentObject(commentID);
-      let leftMargin = depth*50 + "px";
-  
-      return (
-        // IDK IF REMOVE COMMEMNT ID
-        <div key={commentObject._id} id={commentObject._id} className={"comment" + (depth > 0 ? " reply" : "")} style={{marginLeft: `${leftMargin}`}}>
-          <h5>
-            {commentObject.commentedBy} • {utils.getTimestamp(commentObject.commentedDate)}
-          </h5>
-          <h4>
-            {commentObject.content}
-          </h4>
-          {/* UPVOTES HERE */}
-          {/* updoot: +1 upvote +5 rep
-          donvote: -1 upvote -10 rep
-          if <50 rep cant vote */}
-          {/* GREYED OUT IF GUEST */}
-          {/* IDK IF REMOVE ID */}
-          <input id={commentObject._id} className={"reply-button"} type="button" value="Reply" onClick={() => {
-            setSelectedID(postID);
-            setPage(<CreateComment postID={postID} parent={commentObject}/>);
-          }}/>
-        </div>
-      );
+      return <Comment commentObject={commentObject} depth={depth} postID={postID} />;
     }
 
   if (postID === " "){
@@ -133,7 +110,21 @@ export default function Post(props) {
         {/* updoot: +1 upvote +5 rep
         donvote: -1 upvote -10 rep
         if <50 rep cant vote */}
-        <h5><span id="post-views">{post.views}</span><span id="post-comments-count">{commentCount}</span></h5>
+        <h5>
+          <span id="post-votes">{postVotes}</span>
+          <input type="button" id="post-upvotes" value="Updoot" onClick={()=> {
+            // IF REP < 50 OR GUEST CANT VOTE
+            utils.upvotePost(post._id);
+            setPostVotes(postVotes+1);
+          }}/>
+          <input type="button" id="post-downvotes" value="Downvote" onClick={()=> {
+            // IF REP < 50 OR GUEST CANT VOTE
+            utils.downvotePost(post._id);
+            setPostVotes(postVotes-1);
+          }}/>
+          <span id="post-views">{post.views}</span>
+          <span id="post-comments-count">{commentCount}</span>
+        </h5>
         {/* GREY THIS OUT IF GUEST */}
         <input type="button" className="create-comment-button" value="Add a Comment" onClick={() => {
           setSelectedID(postID);

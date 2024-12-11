@@ -33,7 +33,7 @@ export default function Community(props) {
     function communityDate() {
         console.log(community);
         if (!community) return '';
-        const date = new Date(Date(community.startDate));
+        const date = new Date((community.startDate));
         return `Created ${utils.getTimestamp(community.startDate)} on ${monthName(date)}
             ${date.getDate()}, ${date.getFullYear()}.`;
     }
