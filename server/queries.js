@@ -122,6 +122,10 @@ async function passwordMatches(useremail, password) {
 async function deleteCommentAndReplies(commentID) {
     const comment = await CommentModel.findOne({ _id: commentID });
     var replies = comment.commentIDs;
+    await CommentModel.updateMany(
+        { commentIDs: commentID },
+        { $pull: { commentIDs: commentID } }
+    );
     await comment.deleteOne();
     for (let i = 0; i < replies.length; i++) {
         await deleteCommentAndReplies(replies[i]);
