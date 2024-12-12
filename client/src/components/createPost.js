@@ -5,7 +5,8 @@ import Error from './error.js';
 import Home from './home.js';
 
 
-export default function CreatePost({mode}) {
+export default function CreatePost(props) {
+    const name = props.name;
     const {setPage} = usePage();
     const [errorMessage, setErrorMessage] = useState(null);
     
@@ -23,11 +24,16 @@ export default function CreatePost({mode}) {
     const [linkFlairID, setLinkFlairID] = useState("no-flair");
     const [customLinkFlairID, setCustomLinkFlairID] = useState("");
     const [showCustomField, setShowCustomField] = useState(false);
+    const [status, setStatus] = useState(utils.status());  
+    const [isLoggedIn, setIsLoggedIn] = useState(false);    
+    const [userData, setUserData] = useState([]);
     
     useEffect(()=> {
         async function fetchData() {
-            setCommunities(await utils.requestData("http://localhost:8000/communities"));    
+            setCommunities(await utils.requestData("http://localhost:8000/communities"));
             setFlairs(await utils.requestData("http://localhost:8000/linkflairs"));
+            const userObject = await utils.getUserProfile(name);
+            setUserData(await userObject);
         }
 
         fetchData();
@@ -77,14 +83,10 @@ export default function CreatePost({mode}) {
         else if (postContent.length === 0) {
             displayError("Post content cannot be empty");
         }
-        else if (postCreator.length === 0) {
-            displayError("Must specify poster username");
-        }
         else {
             let post = {};
             post.title = postTitle;
             post.content = postContent;
-            post.postedBy = postCreator;
             post.postedDate = new Date();
             post.views = 0;
             if (linkFlairID === "no-flair") {
@@ -100,9 +102,6 @@ export default function CreatePost({mode}) {
             // model.data.posts.push(post);
             const postID = await utils.createPost(post);
 
-            console.log(post);
-            console.log(postID);
-
             if (postID === "Error making post"){
                 displayError("Error making post");
                 return;
@@ -115,13 +114,44 @@ export default function CreatePost({mode}) {
             community.postIDs.push(postID);
             console.log(community);
 
-
-            utils.updateCommunity(communityID, community);
-            console.log('Post created:', post);
+            const response = utils.updateCommunityPosts(communityID, community);
+            console.log('Post created:', response);
 
             setPage(<Home/>);
         }
     }
+
+    useEffect(() => {
+        const checkStatus = async () => {
+            try {
+                const statusResponse = await utils.status();
+                setStatus(statusResponse);
+                setIsLoggedIn(statusResponse.isLoggedIn);
+            } catch (error) {
+                console.error("Error fetching status:", error);
+            }
+        };
+
+        checkStatus();
+        
+        // Set up an interval to check status periodically
+        const intervalId = setInterval(checkStatus, 1000);
+        
+        // Cleanup interval on component unmount
+        return () => clearInterval(intervalId);
+    }, []); // Empty dependency array since we're using interval
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            if (status.user) {
+                const users = await utils.requestData("http://localhost:8000/users");
+                const currentUser = users.find(user => user.name === status.user);
+                // setProfile(currentUser);
+            }
+        };
+
+        fetchUser();
+    }, [status.user]); // Only run when status.user changes
 
     return (
         <div id="make-item">
@@ -151,16 +181,13 @@ export default function CreatePost({mode}) {
                     <option value="create-new-flair" key="create-new-flair">Create New Flair</option>
                     {linkFlairs.map((flair) => { return (
                         <option value={flair._id} key={flair._id} className={"flair"}>{flair.content}</option>)
-                    })}
+                    })} 
                 </select>
                 {showCustomField && (
                     <input type="text" autoComplete="off" id="flair-creation-field" onChange={(e) => setCustomLinkFlairID(e.target.value)} />
                 )}
                 <h5>Post Content: <span className="small">(required)</span></h5>
                 <textarea autoComplete="off" id="post-content-field" onChange={(e) => setPostContent(e.target.value)}></textarea>
-                {/* NO NEED, JUST USE USER'S */}
-                <h5>Post Creator: <span className="small">(required)</span></h5>
-                <input type="text" autoComplete="off" id="post-creator-field" onChange={(e) => setPostCreator(e.target.value)} />
                 <br/>
                 <input type="button" id="post-submit-button" value="Submit Post" onClick={() => submitPost()}/>
                 {errorMessage && <Error message={errorMessage} onClose={() => {

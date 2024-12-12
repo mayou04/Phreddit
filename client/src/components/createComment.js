@@ -131,9 +131,6 @@ export default function CreateComment(props) {
                 <hr/>
                 <h5>Comment Content: <span className="small">(required)</span></h5>
                 <textarea autoComplete="off" id="comment-content-field"  onChange={(e) => setCommentContent(e.target.value)}></textarea>
-                {/* NO USER FIELD, CURRENT USER IS USER */}
-                <h5>Comment Creator: <span className="small">(required)</span></h5>
-                <input type="text" autoComplete="off" id="comment-creator-field"  onChange={(e) => setCommentCreator(e.target.value)}/>
                 <br/>
                 <input type="button" id="comment-submit-button" value="Submit Comment" onClick={() => submitComment()}/>
                     {errorMessage && <Error message={errorMessage} onClose={() => {

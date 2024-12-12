@@ -34,15 +34,21 @@ app.use(session({
 }));
 
 const isAdminOrCreator = async (req, res, next) => {
-    const { user } = req.session;
+    const user = req.session.user;
     if (!user) return res.json({error: "Unauthorized"});
 
-    const { itemId } = req.params;
-    var item = await PostModel.findById(itemId);
-    if (!item) item = await CommentModel.findById(itemId);
+    var postID = req.params.postID;
+    if (postID) var item = await PostModel.findById(postID);
+    if (item) {
+        if (user.isAdmin || item.postedBy.toString() === user.name) {
+            return next(); // User is authorized
+        }
+    }
+    var commentID = req.params.commentID;
+    if (commentID) var item = await CommentModel.findById(commentID);
     if (!item) return res.json({error: "Item not found"});
 
-    if (user.isAdmin || item.postedBy.toString() === user.name || item.commentedBy.toString() === user.name) {
+    if (user.isAdmin || item.commentedBy.toString() === user.name) {
         return next(); // User is authorized
     }
 
@@ -216,6 +222,18 @@ app.post("/communities/make", isLoggedIn, async (req, res) => {
 });
 
 app.put("/communities/update/:communityID", isAdminOrCommunityCreator, async (req, res) => {
+    try {
+        const communityID = req.params.communityID;
+        const newData = req.body;
+        const updatedCommunity = await CommunityModel.findByIdAndUpdate(communityID, newData);
+        res.json(updatedCommunity);
+    } 
+    catch (err) {
+        res.json({error: "Error updating community"});
+    }
+
+});
+app.put("/communities/addPost/:communityID", async (req, res) => {
     try {
         const communityID = req.params.communityID;
         const newData = req.body;

@@ -251,7 +251,6 @@ export async function createPost(newPost){
     const response = await api.post('http://localhost:8000/posts/make', {
       title: newPost.title,
       content: newPost.content,
-      postedBy: newPost.postedBy,
       postedDate: newPost.postedDate,
       views: newPost.views,
       linkFlairID: newPost.linkFlairID,
@@ -267,7 +266,6 @@ export async function createPost(newPost){
 export async function updatePost(postID, newData) {
   try {
     const response = await api.put(`http://localhost:8000/posts/update/${postID}`, newData);
-    console.log(response);
     return response.data;
   } catch (error) {
       console.error('Error updating post:', error);
@@ -338,7 +336,6 @@ export async function createComment(newComment){
   try {
     const response = await api.post('http://localhost:8000/comments/make', {
       content: newComment.content,
-      commentedBy: newComment.commentedBy,
       commentedDate: new Date(),
       commentIDs: []
     });
@@ -370,7 +367,7 @@ export async function createCommunity(newCommunity){
     });
     return response.data; // This will be the comment._id from the server
   } catch (error) {
-    console.error('Error creating comment:', error);
+    console.error('Error creating community:', error);
     throw error;
   }
 }
@@ -380,7 +377,17 @@ export async function updateCommunity(communityID, newData) {
     const response = await api.put(`http://localhost:8000/communities/update/${communityID}`, newData);
     return response.data;
   } catch (error) {
-      console.error('Error updating comment:', error);
+      console.error('Error updating community:', error);
+      throw error;
+  }
+}
+
+export async function updateCommunityPosts(communityID, newData) {
+  try {
+    const response = await api.put(`http://localhost:8000/communities/addPost/${communityID}`, newData);
+    return response.data;
+  } catch (error) {
+      console.error('Error updating community:', error);
       throw error;
   }
 }
@@ -498,3 +505,23 @@ export async function getUserProfile(userName) {
     throw error;
   }
 };
+
+export async function deletePost(postID) {
+  try {
+    const response = await api.delete(`http://localhost:8000/posts/delete/${postID}`);
+    return response.data; // This will contain either a success message or an error message.
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    throw error;
+  }
+}
+
+export async function deleteComment(commentID) {
+  try {
+    const response = await api.delete(`http://localhost:8000/comments/delete/${commentID}`);
+    return response.data; // This will contain either a success message or an error message.
+  } catch (error) {
+    console.error("Error deleting comment:", error);
+    throw error;
+  }
+}

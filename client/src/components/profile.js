@@ -53,14 +53,15 @@ export default function Profile(props){
 
     function displayPosts(){
         return (
-            <div className="">
+            <div className="view-posts">
                 Posts
                 <div className="post-list">
-                    {userData && userData.posts.map((post) => {
+                    {userData && userData.posts.map((post, index) => {
                         return <div className="post" id={post._id} onClick={() => {
                             setSelectedID("editPost");
                             setPage(<EditPost post={post} name={name}/>);
                         }}>
+                            {(index === 0) ? <hr /> : <hr className="post-separator" />}
                             <h3>{post.title}</h3>
                         </div>
                     })}
@@ -71,14 +72,15 @@ export default function Profile(props){
     
     function displayCommunities(){
         return (
-            <div className="">
+            <div className="view-posts">
                 Communities
                 <div className="community-list">
-                    {userData && userData.creatorOfCommunities.map((post) => {
+                    {userData && userData.creatorOfCommunities.map((post, index) => {
                         return <div className="post" id={post._id} onClick={() => {
                             setSelectedID("editPost");
-                            setPage(<EditPost postID={post._id}/>);
+                            setPage(<EditCommunity communityID={post._id}/>);
                         }}> 
+                            {(index === 0) ? <hr /> : <hr className="post-separator" />}
                             <h3>{post.name}</h3>
                         </div>
                     })}
@@ -89,16 +91,17 @@ export default function Profile(props){
     
     function displayComments(){
         return (
-            <div className="">
+            <div className="view-posts">
                 Comments
                 <div className="comment-list">
-                    {userData && userData.comments.map((post) => {
+                    {userData && userData.comments.map((post, index) => {
                         return <div className="post" id={post._id} onClick={() => {
                             setSelectedID("editPost");
-                            setPage(<EditPost />);
+                            setPage(<EditComment name={name} comment={post}/>);
                         }}> 
+                            {(index === 0) ? <hr /> : <hr className="post-separator" />}
                             {/* post title v is first 20 chars */}
-                            <h3>{post.content}</h3>
+                            <h3>{post.content.substring(0,20)+"..."}</h3>
                         </div>
                     })}
                 </div>
@@ -108,14 +111,15 @@ export default function Profile(props){
     
     function displayUsers(){
         return (
-            <div className="">
+            <div className="view-posts">
                 Users
                 <div className="user-list">
-                    {profiles && profiles.map((post) => {
+                    {profiles && profiles.map((post, index) => {
                         return <div className="post" id={post._id} onClick={() => {
                             setSelectedID("editPost");
-                            setPage(<EditPost />);
+                            setPage(<Profile name={name} />);
                         }}> 
+                            {(index === 0) ? <hr /> : <hr className="post-separator" />}
                             <h3>{post.name}</h3>
                             {/* DELETE USER BUTTON */}
                         </div>

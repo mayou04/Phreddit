@@ -57,7 +57,7 @@ export default function EditPost(props) {
 
             const response = await utils.updatePost(postID, postObject);
 
-            console.log('Post updated:', postObject);
+            console.log('Post updated:', response);
 
             // if (response){
             //     displayError("Error updating post");
@@ -66,6 +66,14 @@ export default function EditPost(props) {
 
             setPage(<Profile name={name}/>);
         }
+    }
+
+    async function deletePost(){
+        const response = await utils.deletePost(postID);
+
+        console.log('Post deleted:', response);
+
+        setPage(<Profile name={name}/>);
     }
 
     return (
@@ -77,6 +85,8 @@ export default function EditPost(props) {
                 <textarea autoComplete="off" id="post-content-field" value={postContent} onChange={(e) => setPostContent(e.target.value)}></textarea>
                 <br/>
                 <input type="button" id="post-submit-button" value="Submit Post" onClick={() => submitPost()}/>
+                &nbsp;
+                <input type="button" id="post-submit-button" value="Delete Post" onClick={() => deletePost()}/>
                 {errorMessage && <Error message={errorMessage} onClose={() => {
                     setErrorMessage(null);
                 }} />}

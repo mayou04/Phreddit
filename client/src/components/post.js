@@ -16,6 +16,8 @@ export default function Post(props) {
   const linkFlair = props.flair;
   const[comments, setComments] = useState([]);
   const[directComments, setDirectComments] = useState();
+  const [status, setStatus] = useState(utils.status());  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);    
 
   
   // const fetchData = async () => {
@@ -112,6 +114,7 @@ export default function Post(props) {
         if <50 rep cant vote */}
         <h5>
           <span id="post-votes">{postVotes}</span>
+          ()
           <input type="button" id="post-upvotes" value="Updoot" onClick={()=> {
             // IF REP < 50 OR GUEST CANT VOTE
             utils.upvotePost(post._id);

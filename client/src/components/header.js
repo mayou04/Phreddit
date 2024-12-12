@@ -85,7 +85,7 @@ export default function Header() {
                         }}/>
                         <input type="button" id="create-post-button" value="Create Post" className={((selectedID === "createPost") ? " selected" : "")} onClick={()=> {
                             setSelectedID("createPost");
-                            setPage(<CreatePost />);
+                            setPage(<CreatePost name={status.user.name} />);
                         }}/>  
                     </div> : 
                     <div>
