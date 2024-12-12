@@ -18,6 +18,7 @@ export default function Post(props) {
   const[directComments, setDirectComments] = useState();
   const [status, setStatus] = useState(utils.status());  
   const [isLoggedIn, setIsLoggedIn] = useState(false);    
+  const [currentUser, setCurrentUser] = useState();
 
   useEffect(() => {
     const checkStatus = async () => {
@@ -25,6 +26,7 @@ export default function Post(props) {
             const statusResponse = await utils.status();
             setStatus(statusResponse);
             setIsLoggedIn(statusResponse.isLoggedIn);
+            setCurrentUser(await utils.getUserProfile(status.user.name));
         } catch (error) {
             console.error("Error fetching status:", error);
         }
@@ -43,7 +45,7 @@ export default function Post(props) {
     const fetchUser = async () => {
         if (status.user) {
             const users = await utils.requestData("http://localhost:8000/users");
-            const currentUser = users.find(user => user.name === status.user);
+            // setCurrentUser(await utils.getUserProfile(status.user.name));
         }
     };
 
@@ -129,13 +131,9 @@ export default function Post(props) {
         <h5 className="post-flair">{linkFlair.content}</h5>}
         <h4 id="post-content" className="post-content">{post.content}</h4>
         {/* UPVOTES, GREYED OUT */}
-        {/* updoot: +1 upvote +5 rep
-        donvote: -1 upvote -10 rep
-        if <50 rep cant vote */}
         <h5>
           <span id="post-votes">{postVotes}</span>
-          {status.isLoggedIn}
-          <input type="button" id="post-upvotes" value="Updoot" onClick={()=> {
+          {(status.isLoggedIn) ? <span><input type="button" id="post-upvotes" value="Updoot" onClick={()=> {
             // IF REP < 50 OR GUEST CANT VOTE
             utils.upvotePost(post._id);
             setPostVotes(postVotes+1);
@@ -144,7 +142,7 @@ export default function Post(props) {
             // IF REP < 50 OR GUEST CANT VOTE
             utils.downvotePost(post._id);
             setPostVotes(postVotes-1);
-          }}/>
+          }}/></span> : <span></span>}
           <span id="post-views">{post.views}</span>
           <span id="post-comments-count">{commentCount}</span>
         </h5>

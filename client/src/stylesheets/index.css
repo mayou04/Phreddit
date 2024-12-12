@@ -158,6 +158,9 @@ body {
     transition: background-color 0.2s ease;
     margin: 0px 1px;
 }
+#banner #guest-create-post-button {
+    background-color: grey;
+}
 
 #banner #create-post-button:hover {
     cursor: pointer;
