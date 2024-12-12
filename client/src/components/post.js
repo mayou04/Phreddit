@@ -147,11 +147,10 @@ export default function Post(props) {
           <span id="post-comments-count">{commentCount}</span>
         </h5>
         {/* GREY THIS OUT IF GUEST */}
-        <input type="button" className="create-comment-button" value="Add a Comment" onClick={() => {
+        {(status.isLoggedIn) ? <input type="button" className="create-comment-button" value="Add a Comment" onClick={() => {
           setSelectedID(postID);
           setPage(<CreateComment postID={postID} parent={post}/>);
-        }}
-        />
+        }}/> : <div/>}
         <hr/>
         <div id="comment-section">
           {(directComments === undefined || directComments.length === 0) ? <div></div> : directComments.map((commentObject, index) => {
