@@ -14,7 +14,7 @@ export default function Header() {
     const [postList, setPostList] = useState([]);
     const [status, setStatus] = useState(utils.status());  
     const [isLoggedIn, setIsLoggedIn] = useState(false);    
-    const [profile, setProfile] = useState([]);
+    // const [profile, setProfile] = useState([]);
 
     async function searchForResults(event) {
         if (event.key !== "Enter" || event.target.value === "") return;
@@ -26,7 +26,6 @@ export default function Header() {
         event.target.value = "";
     }
     
-    // Remove the status check from dependency array and use a proper tracking method
     useEffect(() => {
         const checkStatus = async () => {
             try {
@@ -52,7 +51,6 @@ export default function Header() {
             if (status.user) {
                 const users = await utils.requestData("http://localhost:8000/users");
                 const currentUser = users.find(user => user.name === status.user);
-                setProfile(currentUser);
             }
         };
 
@@ -83,7 +81,7 @@ export default function Header() {
                         }}/>
                         <input type="button" id="create-post-button" value={status.user.name} className={""} onClick={()=> {
                             setSelectedID("profile");
-                            setPage(<Profile />);
+                            setPage(<Profile name={status.user.name}/>);
                         }}/>
                         <input type="button" id="create-post-button" value="Create Post" className={((selectedID === "createPost") ? " selected" : "")} onClick={()=> {
                             setSelectedID("createPost");

@@ -4,7 +4,7 @@ import Error from './error.js';
 import * as utils from '../utility.js';
 import Post from "./post.js";
 
-export default function CreateComment(props) {
+export default function EditComment(props) {
     const {setPage} = usePage();
     const [errorMessage, setErrorMessage] = useState(null);
     const [commentContent, setCommentContent] = useState("");

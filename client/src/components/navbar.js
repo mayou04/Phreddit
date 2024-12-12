@@ -16,6 +16,8 @@ export default function Navbar(props) {
     const [status, setStatus] = useState(utils.status());  
     const {setPage} = usePage();
     const [communities, setCommunities] = useState([]);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);    
+    // const [profile, setProfile] = useState([]);
 
     const fetchData = async () => {
         try {
@@ -46,7 +48,6 @@ export default function Navbar(props) {
         )
     }
 
-    // Remove the status check from dependency array and use a proper tracking method
     useEffect(() => {
         const checkStatus = async () => {
             try {
@@ -72,15 +73,12 @@ export default function Navbar(props) {
             if (status.user) {
                 const users = await utils.requestData("http://localhost:8000/users");
                 const currentUser = users.find(user => user.name === status.user);
-                setProfile(currentUser);
+                // setProfile(currentUser);
             }
         };
 
         fetchUser();
     }, [status.user]); // Only run when status.user changes
-
-
-
 
     return (
         <div id="left-sidebar">
@@ -96,15 +94,14 @@ export default function Navbar(props) {
                 {/* GREYED OUT FOR GUEST */}
                 {(status.isLoggedIn) ? 
                 <div>
-                    
+                    <input type="button" className={"logged create-community-button" + ((selectedID === "createCommunity") ? " selected" : "")} value="Create Community" onClick={() => {
+                        setSelectedID("createCommunity");
+                        setPage(<CreateCommunity />);
+                    }} />
                 </div> :
                 <div>
-                    
+                    <input type="button" className={"create-community-button"} value="Create Community"/>
                 </div>}
-                <input type="button" className={"create-community-button" + ((selectedID === "createCommunity") ? " selected" : "")} value="Create Community" onClick={() => {
-                    setSelectedID("createCommunity");
-                    setPage(<CreateCommunity />);
-                }} />
                 <div id="community-list">
                     {renderCommunityList()}
                 </div>

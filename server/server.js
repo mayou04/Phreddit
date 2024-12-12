@@ -380,10 +380,10 @@ app.get("/users/", async (req, res) => {
 app.get("/users/byName/:userName", async (req, res) => {
     try {
         const user = await UserModel.find({name: req.params.userName}).select("-password");
-        const posts = await PostModel.find({ postedBy: user.name });
-        const comments = await CommentModel.find({ commentedBy: user.name });
-        const memberOfCommunities = await getCommunitiesByMember(user.name);
-        const creatorOfCommunities = await getCommunitiesByCreator(user.name);
+        const posts = await PostModel.find({ postedBy: req.params.userName });
+        const comments = await CommentModel.find({ commentedBy: req.params.userName });
+        const memberOfCommunities = await getCommunitiesByMember(req.params.userName);
+        const creatorOfCommunities = await getCommunitiesByCreator(req.params.userName);
         res.json({user, posts, comments, memberOfCommunities, creatorOfCommunities});
     } catch (err) {
         res.json({error: "Error fetching user profile"});

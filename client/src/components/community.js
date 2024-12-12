@@ -7,9 +7,10 @@ export default function Community(props) {
     const [community, setCommunity] = useState();
     const [posts, setPosts] = useState([]);
     const [sortMode, setSortMode] = useState("newest");
-    // const [loading, setLoading] = useState(true);
+    const [status, setStatus] = useState(utils.status());  
+    const [isLoggedIn, setIsLoggedIn] = useState(false);    
+    // const [profile, setProfile] = useState([]);
     
-    console.log(props);
     let monthName = new Intl.DateTimeFormat("en-us", { month: "long" }).format;
 
     useEffect(() => {
@@ -31,7 +32,6 @@ export default function Community(props) {
     }, [props.commId, sortMode]);
 
     function communityDate() {
-        console.log(community);
         if (!community) return '';
         const date = new Date((community.startDate));
         return `Created ${utils.getTimestamp(community.startDate)} on ${monthName(date)}
@@ -42,24 +42,37 @@ export default function Community(props) {
         setSortMode(mode);
     }
 
-    // const posts = useMemo(() => {
-    //     return utils.sortPosts(sortMode, community.postIDs);
-    // }, [sortMode, community.postIDs]);
-    
-    // let posts = [];
+    useEffect(() => {
+        const checkStatus = async () => {
+            try {
+                const statusResponse = await utils.status();
+                setStatus(statusResponse);
+                setIsLoggedIn(statusResponse.isLoggedIn);
+            } catch (error) {
+                console.error("Error fetching status:", error);
+            }
+        };
 
-    // useEffect(() => {
-    //     async function sortPosts(){
-    //         const postList = [];
-    //         for (let postID of community.postIDs){
-    //             const post = utils.getPostObject(postID);
-    //             postList.push(post);
-    //         } 
-    //         const sorted = await utils.sortPosts(sortMode, postList);
-    //         posts = sorted;
-    // }
-    //     sortPosts();
-    // }, [])
+        checkStatus();
+        
+        // Set up an interval to check status periodically
+        const intervalId = setInterval(checkStatus, 1000);
+        
+        // Cleanup interval on component unmount
+        return () => clearInterval(intervalId);
+    }, []); // Empty dependency array since we're using interval
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            if (status.user) {
+                const users = await utils.requestData("http://localhost:8000/users");
+                const currentUser = users.find(user => user.name === status.user);
+                // setProfile(currentUser);
+            }
+        };
+
+        fetchUser();
+    }, [status.user]); // Only run when status.user changes
 
     return (
         (community === undefined) ? <div>Loading...</div> :
@@ -69,10 +82,18 @@ export default function Community(props) {
                 <SortButtons sortedPosts={sortedPosts} currentSortMode={sortMode} />
             </div>
             <p className="community-description">{community.description}</p>
-            {/* Display Name of Creator (User) */}
-            <h5 className="community-date">{communityDate()}</h5>
+            <h5 className="community-date">Created by: {community.createdBy + " • " + communityDate()}</h5>
             <p className="post-counter">{posts.length} post{(posts.length === 1) ? "" : "s"} shown • Members: {community.members.length}</p>
             {/* join/leave if logged in */}
+            {(status.isLoggedIn) ? 
+                ((status.user && community.members.includes(status.user.name)) ? 
+                <p><input type="button" value="Leave" onClick={() => {
+                    console.log(utils.leaveCommunity(community._id));
+                }}/></p> :
+                <p><input type="button" value="Join" onClick={() => {
+                    console.log(utils.joinCommunity(community._id));
+                }}/></p>) : 
+            <p></p>}
             <DisplayPosts setPostID={props.setPostID} postList={posts} isCommunity={true}/>
         </div>
     );

@@ -187,7 +187,7 @@ body {
     text-align: left;
     height: 60px;
     width: 100%;
-    background-color: var(--searchbar-color);
+    background-color: grey;
     border: none;
     border-radius: 10px;
     font-family: "Noto Sans", sans-serif;
@@ -198,23 +198,28 @@ body {
     background-position-x: 10%;
     background-position-y: 50%;
     padding-left: 22%;
-    cursor: pointer;
     transition: background-color 0.2s ease;
 }
 
-#left-sidebar input[type="button"]:hover,
+#left-sidebar .logged input[type="button"],
+#left-sidebar .home-button {
+    background-color: var(--searchbar-color);
+    cursor: pointer;
+}
+
+#left-sidebar .logged input[type="button"]:hover,
 #post-page .create-comment-button:hover {
     background-color: var(--button-hover);
     color: var(--button-text-color);
 }
 
-#left-sidebar input[type="button"]:active,
+#left-sidebar .logged input[type="button"]:active,
 #post-page .create-comment-button:active {
     background-color: var(--button-click);
     color: var(--button-text-color);
 }
 
-#left-sidebar input[type="button"].selected {
+#left-sidebar .logged input[type="button"].selected {
     background-color: var(--button-hover);
     color: var(--button-text-color);
 }
@@ -235,9 +240,9 @@ body {
     min-height: 60px;
 }
 
-#left-sidebar .create-community-button:hover,
-#left-sidebar .create-community-button:active,
-#left-sidebar .create-community-button.selected {
+#left-sidebar .logged .create-community-button:hover,
+#left-sidebar .logged .create-community-button:active,
+#left-sidebar .logged .create-community-button.selected {
     background-image: url('data:image/svg+xml,<svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path fill="%23FFFFFF" d="m13 12h3.5c.2761424 0 .5.2238576.5.5s-.2238576.5-.5.5h-3.5v3.5c0 .2761424-.2238576.5-.5.5s-.5-.2238576-.5-.5v-3.5h-3.5c-.27614237 0-.5-.2238576-.5-.5s.22385763-.5.5-.5h3.5v-3.5c0-.27614237.2238576-.5.5-.5s.5.22385763.5.5zm-.5 11c-5.79898987 0-10.5-4.7010101-10.5-10.5 0-5.79898987 4.70101013-10.5 10.5-10.5 5.7989899 0 10.5 4.70101013 10.5 10.5 0 5.7989899-4.7010101 10.5-10.5 10.5zm0-1c5.2467051 0 9.5-4.2532949 9.5-9.5 0-5.24670512-4.2532949-9.5-9.5-9.5-5.24670512 0-9.5 4.25329488-9.5 9.5 0 5.2467051 4.25329488 9.5 9.5 9.5z"/></svg>');
     margin-bottom: 4px;
 }

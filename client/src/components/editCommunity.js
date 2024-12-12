@@ -5,7 +5,7 @@ import { usePage } from "../contexts/pageContext.js";
 import { useSelectedID } from '../contexts/selectedIDContext.js';
 import Community from './community.js';
 
-export default function CreateCommunity() {
+export default function EditCommunity() {
     const {setPage} = usePage();
     const [errorMessage, setErrorMessage] = useState(null);
     const {setSelectedID} = useSelectedID();

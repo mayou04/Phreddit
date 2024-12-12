@@ -1,19 +1,4 @@
 import axios from "axios";
-// const[posts, setPosts] = useState([]);
-// const[communities, setComm] = useState([]);
-// const[linkFlairs, setFlair] = useState([]);
-// const[commentCounts, setCommCount] = useState([]);
-
-// export async function fetchData(){
-//   setPosts(await requestData("http://localhost:8000/posts"));
-//   setComm(await requestData("http://localhost:8000/communities"));
-//   setFlair(await requestData("http://localhost:8000/comments"));
-//   setCommCount(await requestData("http://localhost:8000/linkflairs"));
-// }
-
-// useEffect(()=> {
-//   fetchData();
-// }, [])
 
 const api = axios.create({
   withCredentials: true,
@@ -281,7 +266,6 @@ export async function createPost(newPost){
 
 export async function updatePost(postID, newData) {
   try {
-    console.log(newData);
     const response = await api.put(`http://localhost:8000/posts/update/${postID}`, newData);
     console.log(response);
     return response.data;
@@ -306,7 +290,6 @@ export async function addView(postID) {
 export async function upvotePost(postID) {
   try {
     const response = await api.put(`http://localhost:8000/posts/addUpvote/${postID}`);
-    // console.log(postID);
     return response.data;
   }
   catch (error) {
@@ -483,3 +466,35 @@ export async function logoutUser() {
     return { success: false, error: error.message };
   }
 }
+
+export async function joinCommunity(communityID) {
+  try {
+    const response = await api.post(`http://localhost:8000/communities/join/${communityID}`);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error joining community:', error);
+    throw error;
+  }
+}
+
+export async function leaveCommunity(communityID) {
+  try {
+    const response = await api.post(`http://localhost:8000/communities/leave/${communityID}`);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error leaving community:', error);
+    throw error;
+  }
+}
+
+export async function getUserProfile(userName) {
+  try {
+    const response = await requestData(`http://localhost:8000/users/byName/${userName}`);
+    return response;
+  } catch (error) {
+    console.error('Error leaving community:', error);
+    throw error;
+  }
+};
