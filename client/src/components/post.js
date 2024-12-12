@@ -133,7 +133,7 @@ export default function Post(props) {
         {/* UPVOTES, GREYED OUT */}
         <h5>
           <span id="post-votes">{postVotes}</span>
-          {(status.isLoggedIn) ? <span><input type="button" id="post-upvotes" value="Updoot" onClick={()=> {
+          {(status.isLoggedIn) ? (currentUser && currentUser.user.reputation >= 50) ? <span><input type="button" id="post-upvotes" value="Updoot" onClick={()=> {
             // IF REP < 50 OR GUEST CANT VOTE
             utils.upvotePost(post._id);
             setPostVotes(postVotes+1);
@@ -142,7 +142,7 @@ export default function Post(props) {
             // IF REP < 50 OR GUEST CANT VOTE
             utils.downvotePost(post._id);
             setPostVotes(postVotes-1);
-          }}/></span> : <span></span>}
+          }}/></span> : <span></span> : <span></span>}
           <span id="post-views">{post.views}</span>
           <span id="post-comments-count">{commentCount}</span>
         </h5>

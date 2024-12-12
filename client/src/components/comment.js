@@ -58,7 +58,7 @@ export default function Comment({commentObject, depth, postID}) {
         </h4>
         <span id="post-votes">{votes}</span>
         
-        {(status.isLoggedIn) ? <span><input type="button" id="post-upvotes" value="Updoot" onClick={async () => {
+        {(status.isLoggedIn) ? (currentUser && currentUser.user.reputation >= 50) ? <span><input type="button" id="post-upvotes" value="Updoot" onClick={async () => {
         await utils.upvoteComment(commentObject._id);
         setVotes(prev => prev + 1);
         }}/>
@@ -70,7 +70,7 @@ export default function Comment({commentObject, depth, postID}) {
         setSelectedID(postID);
         setPage(<CreateComment postID={postID} parent={commentObject}/>);
         }}/>
-      </span> : <span></span>}
+      </span> : <span></span> : <span></span>}
       </div>
     );
   }
