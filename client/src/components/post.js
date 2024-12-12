@@ -19,16 +19,36 @@ export default function Post(props) {
   const [status, setStatus] = useState(utils.status());  
   const [isLoggedIn, setIsLoggedIn] = useState(false);    
 
-  
-  // const fetchData = async () => {
-  //   try {
-  //       const data = await utils.requestData("http://localhost:8000/posts");
-  //       setAllPosts(data);
-        
-  //   } catch (error) {
-  //       console.error("Error fetching posts:", error);
-  //   }
-  // };
+  useEffect(() => {
+    const checkStatus = async () => {
+        try {
+            const statusResponse = await utils.status();
+            setStatus(statusResponse);
+            setIsLoggedIn(statusResponse.isLoggedIn);
+        } catch (error) {
+            console.error("Error fetching status:", error);
+        }
+    };
+
+    checkStatus();
+    
+    // Set up an interval to check status periodically
+    const intervalId = setInterval(checkStatus, 1000);
+    
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []); // Empty dependency array since we're using interval
+
+  useEffect(() => {
+    const fetchUser = async () => {
+        if (status.user) {
+            const users = await utils.requestData("http://localhost:8000/users");
+            const currentUser = users.find(user => user.name === status.user);
+        }
+    };
+
+  fetchUser();
+  }, [status.user]); // Only run when status.user changes
 
   // Returns a div with all the comments on the post
   useEffect(()=> {
@@ -114,7 +134,7 @@ export default function Post(props) {
         if <50 rep cant vote */}
         <h5>
           <span id="post-votes">{postVotes}</span>
-          ()
+          {status.isLoggedIn}
           <input type="button" id="post-upvotes" value="Updoot" onClick={()=> {
             // IF REP < 50 OR GUEST CANT VOTE
             utils.upvotePost(post._id);
