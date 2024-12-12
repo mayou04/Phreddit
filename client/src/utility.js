@@ -438,7 +438,7 @@ export async function loginUser(userEmail, userPassword) {
     }, {withCredentials: true});
 
     if (response.data.error) {
-      throw new Error(response.data.error);
+      return response.data.error;
     }
 
     // Check if the login was successful

@@ -150,10 +150,14 @@ export default function Welcome(){
         }
         else {
             let userID = await utils.registerUser(user);
-            if (userID !== "Error making user"){
-                displayError("Account created.");
-                setPage(<Welcome/>);
+            if (userID === "Error making user" || userID === "Account with username or email already exists") {
+                displayError(userID);
             }
+            var response = await utils.loginUser(email, password);
+            if (response.isLoggedIn === true) {
+                setPage(<Home />);
+            }
+
         }
     }
 

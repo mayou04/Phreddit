@@ -145,9 +145,12 @@ app.put("/posts/addView/:postID", async (req, res) => {
     }
 });
 
-app.put("/posts/addUpvote/:postID", async (req, res) => {
+app.put("/posts/addUpvote/:postID", isLoggedIn, async (req, res) => {
     try {
         const postID = req.params.postID;
+        const userInfo = req.session.user;
+        if (userInfo) var voter = UserModel.findOne({name: userInfo.name});
+        if (voter.reputation < 50) return res.json({error: "Reputation too low to vote"});
         const result = await PostModel.findByIdAndUpdate(
             postID,
             {$inc: {voteCount: 1}},
@@ -166,9 +169,12 @@ app.put("/posts/addUpvote/:postID", async (req, res) => {
     }
 });
 
-app.put("/posts/addDownvote/:postID", async (req, res) => {
+app.put("/posts/addDownvote/:postID", isLoggedIn, async (req, res) => {
     try {
         const postID = req.params.postID;
+        const userInfo = req.session.user;
+        if (userInfo) var voter = UserModel.findOne({name: userInfo.name});
+        if (voter.reputation < 50) return res.json({error: "Reputation too low to vote"});
         const result = await PostModel.findByIdAndUpdate(
             postID,
             {$inc: {voteCount: -1}},
@@ -318,9 +324,12 @@ app.put("/comments/update/:commentID", isAdminOrCreator, async (req, res) => {
     }
 });
 
-app.put("/comments/addUpvote/:commentID", async (req, res) => {
+app.put("/comments/addUpvote/:commentID", isLoggedIn, async (req, res) => {
     try {
         const commentID = req.params.commentID;
+        const userInfo = req.session.user;
+        if (userInfo) var voter = UserModel.findOne({name: userInfo.name});
+        if (voter.reputation < 50) return res.json({error: "Reputation too low to vote"});
         const result = await CommentModel.findByIdAndUpdate(
             commentID,
             {$inc: {voteCount: 1}},
@@ -339,9 +348,12 @@ app.put("/comments/addUpvote/:commentID", async (req, res) => {
     }
 });
 
-app.put("/comments/addDownvote/:commentID", async (req, res) => {
+app.put("/comments/addDownvote/:commentID", isLoggedIn, async (req, res) => {
     try {
         const commentID = req.params.commentID;
+        const userInfo = req.session.user;
+        if (userInfo) var voter = UserModel.findOne({name: userInfo.name});
+        if (voter.reputation < 50) return res.json({error: "Reputation too low to vote"});
         const result = await CommentModel.findByIdAndUpdate(
             commentID,
             {$inc: {voteCount: -1}},
@@ -446,6 +458,10 @@ app.delete("/users/delete/:userID", isAdminOrSelf, async (req, res) => {
 app.post("/register", async (req, res) => {
     try {
         let userDetails = req.body;
+
+        const check = await UserModel.findOne({ $or: [{email: userDetails.email}, {name: userDetails.name}] });
+        if (check) return res.json({error: "Account with username or email already exists"});
+
         let newReputation = 100;
         if (userDetails.isAdmin === true) newReputation = 1000;
         const user = await UserModel.create({
