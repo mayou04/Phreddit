@@ -5,12 +5,14 @@ import * as utils from '../utility.js';
 import EditPost from './editPost.js';
 import EditCommunity from './editCommunity.js';
 import EditComment from './editComment.js';
+import CommentedComment from './commentedComment.js';
 // import UserView from './userView.js';
 
 
 export default function Profile(props){
     const [pageState, setPageState] = useState("users");
     const name = props.name;
+    const [isAdmin, setAdmin] = useState(props.isAdmin);
     const [posts, setPosts] = useState([]);
     const [communities, setCommunities] = useState([]);
     const [comments, setComments] = useState([]);
@@ -77,7 +79,7 @@ export default function Profile(props){
                 <div className="community-list">
                     {userData && userData.creatorOfCommunities.map((post, index) => {
                         return <div className="post" id={post._id} onClick={() => {
-                            setSelectedID("editPost");
+                            setSelectedID("editCommunity");
                             setPage(<EditCommunity community={post} name={name}/>);
                         }}> 
                             {(index === 0) ? <hr /> : <hr className="post-separator" />}
@@ -95,14 +97,7 @@ export default function Profile(props){
                 Comments
                 <div className="comment-list">
                     {userData && userData.comments.map((post, index) => {
-                        return <div className="post" id={post._id} onClick={() => {
-                            setSelectedID("editPost");
-                            setPage(<EditComment name={name} comment={post}/>);
-                        }}> 
-                            <h3>{/*PARENT POST HERE*/}</h3>
-                            {(index === 0) ? <hr /> : <hr className="post-separator" />}
-                            <h3>{post.content.substring(0,20)+"..."}</h3>
-                        </div>
+                            return <CommentedComment comment={post} index={index} name={name}/>
                     })}
                 </div>
             </div>
@@ -116,12 +111,17 @@ export default function Profile(props){
                 <div className="user-list">
                     {profiles && profiles.map((post, index) => {
                         return <div className="post" id={post._id} onClick={() => {
-                            setSelectedID("editPost");
-                            setPage(<Profile name={name} />);
+                            setSelectedID("editUser");
+                            console.log(post);
+                            setPage(<Profile key={Date.now()} name={post.name} isAdmin={true}/>);
                         }}> 
                             {(index === 0) ? <hr /> : <hr className="post-separator" />}
                             <h3>{post.name}</h3>
-                            {/* DELETE USER BUTTON */}
+                            <h3>{post.email}</h3>
+                            <h3>{post.reputation}</h3>
+                            <input type="button" className={"register"} value="remove user" onClick={() => {
+                                deleteUser(post._id);
+                            }}/>
                         </div>
                     })}
                 </div>
@@ -138,6 +138,14 @@ export default function Profile(props){
             setPageState("posts");
         }
     }, []);
+
+    async function deleteUser(name){
+        const response = await utils.deleteUser(name);
+
+        console.log('User deleted:', response);
+
+        setPage(<Profile name={status.user.name} isAdmin={false}/>);
+    }
     
     return (
         <div className="profile-page">
@@ -150,6 +158,12 @@ export default function Profile(props){
                     <div id="welcome-text">Reputation: {userData.user[0].reputation}</div>
                     <br></br>
                 </div>
+                {(isAdmin) ? <div>
+                    <input type="button" className={"register"} value="Back" onClick={() => {
+                            setSelectedID("");
+                            setPage(<Profile name={status.user.name} isAdmin={false} />);
+                        }}/>
+                </div> : <div/>}
                 <div className="buttons">
                     {(userData && userData.user[0].isAdmin) &&
                         <input type="button" className={"register"} value="Users" onClick={() => {

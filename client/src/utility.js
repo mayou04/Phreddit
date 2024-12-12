@@ -535,3 +535,13 @@ export async function deleteCommunity(communityID) {
     throw error;
   }
 }
+
+export async function deleteUser(communityID) {
+  try {
+    const response = await api.delete(`http://localhost:8000/users/delete/${communityID}`);
+    return response.data; // This will contain either a success message or an error message.
+  } catch (error) {
+    console.error("Error deleting community:", error);
+    throw error;
+  }
+}
