@@ -56,18 +56,22 @@ const isAdminOrCreator = async (req, res, next) => {
 };
 
 const isAdminOrCommunityCreator = async (req, res, next) => {
-    const { user } = req.session;
+    const user = req.session.user;
     if (!user) return res.json({error: "Unauthorized"});
 
-    const { itemId } = req.params;
-    if (!item) item = await CommunityModel.findById(itemId);
-    if (!item) return res.json({error: "Item not found"});
+    const communityID = req.params.communityID;
+    if (communityID) {
+        const community = await CommunityModel.findById(communityID);
+        if (!community) return res.json({error: "Community not found"});
 
-    if (user.isAdmin || item.createdBy.toString() === user.name) {
-        return next(); // User is authorized
+        if (user.isAdmin || community.createdBy.toString() === user.name) {
+            return next(); // User is authorized
+        }
+    } else {
+        return res.json({error: "Community ID not provided"});
     }
 
-    res.json({error: "No permission to modify this item"});
+    res.json({error: "No permission to modify this community"});
 };
 
 const isAdminOrSelf = async (req, res, next) => {
@@ -254,7 +258,8 @@ app.put("/communities/addPost/:communityID", async (req, res) => {
 app.delete("/communities/delete/:communityID", isAdminOrCommunityCreator, async (req, res) => {
     try {
         const communityID = req.params.communityID;
-        await deleteCommunity(communityID);
+        const response = await deleteCommunity(communityID);
+        console.log(response);
         res.json({message: "Community successfully deleted"});
     }
     catch (err) {

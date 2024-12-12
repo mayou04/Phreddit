@@ -20,32 +20,6 @@ export default function CreateComment(props) {
 
     const postID = props.postID;
     const parent = props.parent;
-    // const post = props.post;
-    // THIS IS THE PARENT POST/COMMENT
-
-    // useEffect(()=> {
-    //     async function makePosts() {
-    //         const post = await utils.getPostObject(postID);
-    //         const community = await utils.getCommunityFromPost(postID);
-    //         const flair = await utils.getFlairObject(post.linkFlairID);
-    //         const commentCount = await utils.getCommentCountForPost(postID);
-            
-    //         if (post){
-    //             setPost(post);
-    //         }
-    //         if (community){
-    //             setComm(community);
-    //         }
-    //         if (flair){
-    //             setFlair(flair);
-    //         }
-    //         if (commentCount){
-    //             setCommCount(commentCount);
-    //         }
-    //     }
-
-    //     makePosts();
-    // }, []);
 
     useEffect(() => {
         const checkStatus = async () => {

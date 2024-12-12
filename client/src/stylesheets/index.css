@@ -190,7 +190,6 @@ body {
     text-align: left;
     height: 60px;
     width: 100%;
-    background-color: var(--searchbar-color);
     border: none;
     border-radius: 10px;
     font-family: "Noto Sans", sans-serif;
@@ -202,6 +201,10 @@ body {
     background-position-y: 50%;
     padding-left: 22%;
     transition: background-color 0.2s ease;
+}
+
+.guest-create-community-button{
+    background-color: grey;
 }
 
 #left-sidebar .logged input[type="button"],

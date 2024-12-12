@@ -525,3 +525,13 @@ export async function deleteComment(commentID) {
     throw error;
   }
 }
+
+export async function deleteCommunity(communityID) {
+  try {
+    const response = await api.delete(`http://localhost:8000/communities/delete/${communityID}`);
+    return response.data; // This will contain either a success message or an error message.
+  } catch (error) {
+    console.error("Error deleting community:", error);
+    throw error;
+  }
+}

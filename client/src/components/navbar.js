@@ -94,13 +94,13 @@ export default function Navbar(props) {
                 {/* GREYED OUT FOR GUEST */}
                 {(status.isLoggedIn) ? 
                 <div>
-                    <input type="button" className={"logged create-community-button" + ((selectedID === "createCommunity") ? " selected" : "")} value="Create Community" onClick={() => {
+                    <input type="button" className={"create-community-button" + ((selectedID === "createCommunity") ? " selected" : "")} value="Create Community" onClick={() => {
                         setSelectedID("createCommunity");
                         setPage(<CreateCommunity />);
                     }} />
                 </div> :
                 <div>
-                    <input type="button" className={"create-community-button"} value="Create Community"/>
+                    <input type="button" className={"guest-create-community-button"} value="Create Community"/>
                 </div>}
                 <div id="community-list">
                     {renderCommunityList()}

@@ -78,7 +78,7 @@ export default function Profile(props){
                     {userData && userData.creatorOfCommunities.map((post, index) => {
                         return <div className="post" id={post._id} onClick={() => {
                             setSelectedID("editPost");
-                            setPage(<EditCommunity communityID={post._id}/>);
+                            setPage(<EditCommunity community={post} name={name}/>);
                         }}> 
                             {(index === 0) ? <hr /> : <hr className="post-separator" />}
                             <h3>{post.name}</h3>
@@ -99,8 +99,8 @@ export default function Profile(props){
                             setSelectedID("editPost");
                             setPage(<EditComment name={name} comment={post}/>);
                         }}> 
+                            <h3>{/*PARENT POST HERE*/}</h3>
                             {(index === 0) ? <hr /> : <hr className="post-separator" />}
-                            {/* post title v is first 20 chars */}
                             <h3>{post.content.substring(0,20)+"..."}</h3>
                         </div>
                     })}
@@ -129,21 +129,32 @@ export default function Profile(props){
         );
     }
 
+    async function getPost(commentID){
+        return utils.getPostFromComment(commentID);
+    }
+
+    useEffect(() => {
+        if (userData && !userData.user[0].isAdmin) {
+            setPageState("posts");
+        }
+    }, []);
+    
     return (
         <div className="profile-page">
             {(userData) ? 
             <div>
                 <div className="user-data">
-                    <div id="welcome-text">{userData.user[0].name}</div>
-                    <div id="welcome-text">{userData.user[0].email}</div>
-                    <div id="welcome-text">{utils.getTimestamp(userData.user[0].joinedDate)}</div>
+                    <div id="welcome-text">Display Name: {userData.user[0].name}</div>
+                    <div id="welcome-text">Email: {userData.user[0].email}</div>
+                    <div id="welcome-text">Joined: {utils.getTimestamp(userData.user[0].joinedDate)}</div>
+                    <div id="welcome-text">Reputation: {userData.user[0].reputation}</div>
+                    <br></br>
                 </div>
                 <div className="buttons">
-                    {/* {(userData.user[0].isAdmin)} */}
-                    {(userData.user[0].isAdmin) ?
-                    <input type="button" className={"register"} value="Users" onClick={() => {
-                        setPageState("users");
-                    }}/> : setPageState("posts")
+                    {(userData && userData.user[0].isAdmin) &&
+                        <input type="button" className={"register"} value="Users" onClick={() => {
+                            setPageState("users");
+                        }}/>
                     }
                     <input type="button" className={"register"} value="Posts" onClick={() => {
                         setPageState("posts");
@@ -164,25 +175,7 @@ export default function Profile(props){
             </div> : 
             <div></div>
             }
-            
-            {/* {(status.user.isAdmin) ? 
-            (pageState === "users") ? loginOptions() : 
-            ((pageState === "posts") ? register() : 
-            ((pageState === "login") ? login() : setPage(<Home/>)))} */}
         </div>
-        // (community === undefined) ? <div>Loading...</div> :
-        // <div className="view-posts">
-        //     <div id="community-header">
-        //         <span id="community-title">{community.name}</span>
-        //         <SortButtons sortedPosts={sortedPosts} currentSortMode={sortMode} />
-        //     </div>
-        //     <p className="community-description">{community.description}</p>
-        //     {/* Display Name of Creator (User) */}
-        //     <h5 className="community-date">{communityDate()}</h5>
-        //     <p className="post-counter">{posts.length} post{(posts.length === 1) ? "" : "s"} shown • Members: {community.members.length}</p>
-        //     {/* join/leave if logged in */}
-        //     <DisplayPosts setPostID={props.setPostID} postList={posts} isCommunity={true}/>
-        // </div>
     );
 
     // user display name

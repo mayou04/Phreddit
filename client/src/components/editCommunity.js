@@ -4,24 +4,27 @@ import * as utils from '../utility.js';
 import { usePage } from "../contexts/pageContext.js";
 import { useSelectedID } from '../contexts/selectedIDContext.js';
 import Community from './community.js';
+import Profile from './profile.js';
 
-export default function EditCommunity() {
+export default function EditCommunity(props) {
     const {setPage} = usePage();
+    const name = props.name;
     const [errorMessage, setErrorMessage] = useState(null);
     const {setSelectedID} = useSelectedID();
     const[communities, setCommunities] = useState();
     const [status, setStatus] = useState(utils.status());  
     const [isLoggedIn, setIsLoggedIn] = useState(false);    
     const [profile, setProfile] = useState([]);
+    const [deleteYes, setDeleteYes] = useState(false);
 
     const displayError = (errorStr) => {
         setErrorMessage(errorStr);
     };
 
     // Set the object elements
-    const [communityName, setCommunityName] = useState("");
-    const [communityDescription, setCommunityDescription] = useState("");
-    const [communityCreator, setCommunityCreator] = useState("");
+    const communityObject = props.community;
+    const [communityName, setCommunityName] = useState(communityObject.name || "");
+    const [communityDescription, setCommunityDescription] = useState(communityObject.description || "");
 
     useEffect(()=> {
         async function fetchData(){
@@ -65,23 +68,12 @@ export default function EditCommunity() {
     }, [status.user]); // Only run when status.user changes
     
     async function submitCommunity(){
-        let community = {};
-        community.description = communityDescription;
-        community.members = [];
-        community.members.push(status.user.name);
-        community.name = communityName;
-        community.postIDs = [];
-        community.startDate = new Date();
-
         //arg check
         if (communityName.length > 100) {
             return displayError("Community name cannot be more than 100 characters");
         }
         else if (communityName.length === 0) {
             displayError("Community name cannot be empty");
-        }
-        else if (await utils.communityNameExists(communities, communityName)) {
-            displayError("Community with this name already exists");
         }
         else if (communityDescription.length > 500) {
             displayError("Community description cannot be more than 500 characters");
@@ -90,22 +82,43 @@ export default function EditCommunity() {
             displayError("Community description cannot be empty");
         }
         else {
-            const communityID = await utils.createCommunity(community);
-            console.log(await communityID);
-            setSelectedID(communityID);
-            setPage(<Community commId={communityID} posts={[]} />);
+            communityObject.name = communityName;
+            communityObject.description = communityDescription;
+
+            const response = await utils.updateCommunity(communityObject._id, communityObject);
+            console.log("Community created:", response);
+
+            setPage(<Profile name={name}/>);
         }
+    }
+
+    async function deleteCommunity(){
+        setDeleteYes(true);
+    }
+    
+    async function actualDeleteCommunity(){
+        setDeleteYes(false);
+        const response = await utils.deleteCommunity(communityObject._id);
+        console.log('Community deleted:', response);
+
+        setPage(<Profile name={name}/>);
     }
 
     return (
         <div id="make-item">
             <div id="make-community">
                 <h5>Community Name: <span className="small">(required)</span></h5>
-                <input type="text" autoComplete="off" id="community-name-field" onChange={(e) => setCommunityName(e.target.value)}/>
+                <input type="text" autoComplete="off" id="community-name-field" value={communityName} onChange={(e) => setCommunityName(e.target.value)}/>
                 <h5>Community Description: <span className="small">(required)</span></h5>
-                <textarea autoComplete="off" id="community-desc-field" onChange={(e) => setCommunityDescription(e.target.value)}></textarea>
+                <textarea autoComplete="off" id="community-desc-field" value={communityDescription} onChange={(e) => setCommunityDescription(e.target.value)}></textarea>
                 <h5>
-                    <input type="button" id="community-submit-button" value="Engender Community" onClick={() => {submitCommunity()}}/>
+                <input type="button" id="community-submit-button" value="Engender Community" onClick={() => {submitCommunity()}}/>
+                &nbsp;
+                <input type="button" id="community-submit-button" value="Delete Community" onClick={() => {deleteCommunity()}}/>
+                {(deleteYes) ? 
+                    <div>Are you sure? <br/>
+                        <input type="button" id="community-submit-button" value="Affirm." onClick={() => {actualDeleteCommunity()}}/>
+                    </div> : <div></div>}
                 </h5>
                 {errorMessage && <Error message={errorMessage} onClose={() => {
                     setErrorMessage(null);
