@@ -178,9 +178,8 @@ export default function Welcome(){
             displayError("Password cannot be empty");
         }
         else {
-            let userID;
-            user = await utils.loginUser(email, password);
-            if (userID === "Login failed"){
+            let user = await utils.loginUser(email, password);
+            if (user === "Invalid password"){
                 displayError("Error logging in");
             } else {
                 console.log(await utils.status());
